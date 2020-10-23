@@ -1,0 +1,92 @@
+USE ${DB};
+
+
+SELECT
+    QUEUE_PATH,
+    QUEUE_NAME,
+    ABSOLUTE_CAPACITY
+FROM
+    QUEUE
+WHERE
+    REPORTING_TS = '2020-10-16 13:35:02-0400';
+
+SELECT DISTINCT
+    QUEUE_PATH,
+    SUM(ABSOLUTE_CAPACITY)
+FROM
+    QUEUE
+WHERE
+    REPORTING_TS = '2020-10-16 13:35:02-0400'
+GROUP BY
+    QUEUE_PATH;
+
+SELECT
+    SUM(ABSOLUTE_CAPACITY)
+FROM
+    QUEUE
+WHERE
+    REPORTING_TS = '2020-10-16 13:35:02-0400'
+;
+
+WITH
+    QUEUE_PATH AS (
+        SELECT DISTINCT
+            REPORTING_TS,
+            split(QUEUE_PATH, "\\.") AS QUEUE_PATH,
+            QUEUE_NAME
+        FROM
+            QUEUE
+    )
+SELECT
+    concat(substring_index(substring_index(REPORTING_TS, '-', 3), ':', 2), ':00') AS RPT_TS,
+    QUEUE_PATH,
+    QUEUE_NAME
+FROM
+    QUEUE_PATH
+WHERE
+    REPORTING_TS = '2020-10-16 13:35:02-0400'
+ORDER BY
+    RPT_TS,
+    QUEUE_PATH,
+    QUEUE_NAME;
+
+WITH
+    PE AS (
+        SELECT
+            REPORTING_TS,
+            QUEUE_PATH,
+            QUEUE_NAME,
+            POS,
+            QUEUE
+        FROM
+            QUEUE LATERAL VIEW POSEXPLODE(split(QUEUE_PATH, "\\.")) QUEUE_TAGS AS POS, QUEUE
+    ),
+    PP AS (
+        SELECT
+            REPORTING_TS,
+            QUEUE_PATH,
+            QUEUE_NAME,
+            MAX(POS) MPOS
+        FROM
+            PE
+        GROUP BY
+            REPORTING_TS,
+            QUEUE_PATH,
+            QUEUE_NAME
+    )
+SELECT
+    PE.REPORTING_TS,
+    PE.QUEUE_PATH,
+    PE.QUEUE_NAME,
+    PE.POS,
+    PE.QUEUE AS PARENT
+FROM
+    PE
+        INNER JOIN PP ON PE.REPORTING_TS = PP.REPORTING_TS AND PE.QUEUE_PATH = PP.QUEUE_PATH AND
+                         PE.QUEUE_NAME = PP.QUEUE_NAME AND PE.POS = PP.MPOS
+WHERE
+    PE.REPORTING_TS = '2020-10-16 13:35:02-0400'
+ORDER BY
+    PE.REPORTING_TS, PE.QUEUE_PATH, PE.QUEUE_NAME;
+
+
