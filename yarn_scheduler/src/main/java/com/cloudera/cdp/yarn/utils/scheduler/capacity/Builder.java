@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Builder {
 
-    public static final String ROOT_QUEUE_PREFIX = "yarn.scheduler.capacity.root.";
+    public static final String ROOT_QUEUE_PREFIX = "yarn.scheduler.capacity.";
 
     public static Queue build(Properties schedulerProperties) {
         Queue rootQueue = new Queue();
@@ -24,8 +24,6 @@ public class Builder {
 
         rootQueue = buildOutRootQueue(propsMap);
 
-//        System.out.println("hello");
-
         return rootQueue;
     }
 
@@ -38,43 +36,41 @@ public class Builder {
         List<String> foundQueues = new ArrayList<String>();
 
         for (Map.Entry<String, String> entry : entries) {
-            if (keyWords.contains(entry.getKey())) {
-//                System.out.println("Found: " + entry.getKey());
-                setQueueProperty(root, entry, null);
-            } else {
-//                System.out.println("NOT found: " + entry.getKey());
-                // This is a subqueue.
-                String prefix = entry.getKey().split("\\.")[0];
-                if (!foundQueues.contains(prefix)) {
-                    foundQueues.add(prefix);
-                    buildChildrenQueues(root, null, prefix, entries, keyWords);
+            if (entry.getKey().startsWith("root")) {
+                String prefix = entry.getKey().substring("root.".length()).split("\\.")[0];
+                if (keyWords.contains(prefix)) {
+                    setQueueProperty(root, entry, "root");
+                } else {
+                    // This is a subqueue.
+                    if (!foundQueues.contains(prefix)) {
+                        foundQueues.add(prefix);
+                        buildChildrenQueues(root, "root", prefix, entries, keyWords);
+                    }
                 }
             }
         }
 
-//        System.out.println("Done");
         return root;
     }
 
     protected static void buildChildrenQueues(Queue parent, String path, String queueName, Set<Map.Entry<String, String>> cfg, List keyWords) {
+//        System.out.println(parent.getName() + ":" + path + ":" + queueName);
         Queue subQueue = new Queue();
         subQueue.setName(queueName);
         subQueue.setParent(parent);
         parent.getChildren().put(queueName, subQueue);
-        String queuePath = path!=null?path + "." + queueName:queueName;
+        String queuePath = path != null ? path + "." + queueName : queueName;
         List<String> foundQueues = new ArrayList<String>();
 
         for (Map.Entry<String, String> entry : cfg) {
             if (entry.getKey().startsWith(queuePath + ".")) {
                 String prefix = null;
                 try {
-                    prefix = entry.getKey().substring(queuePath.length()).split("\\.")[0];
+                    prefix = entry.getKey().substring(queuePath.length() + 1).split("\\.")[0];
 
                     if (keyWords.contains(prefix)) {
-//                        System.out.println("Found: " + entry.getKey());
                         setQueueProperty(subQueue, entry, queuePath);
                     } else {
-//                        System.out.println("NOT found: " + entry.getKey());
                         // This is a subqueue.
                         if (!foundQueues.contains(prefix)) {
                             foundQueues.add(prefix);
@@ -94,7 +90,8 @@ public class Builder {
     }
 
     protected static void setQueueProperty(Queue queue, Map.Entry<String, String> entry, String queuePath) {
-        if (queuePath == null) {
+//        System.out.println(queue.getName() + "-" + entry.getKey() + "-" +  entry.getValue());
+        if (queuePath == null || !entry.getKey().startsWith(queuePath)) {
             if ("capacity".equals(entry.getKey())) {
                 queue.setCapacity(Float.parseFloat(entry.getValue().toString()));
             } else if ("maximum-capacity".equals(entry.getKey())) {
@@ -109,17 +106,17 @@ public class Builder {
                 queue.setPriority(Integer.parseInt(entry.getValue().toString()));
             }
         } else {
-            if ("capacity".equals(entry.getKey())) {
+            if ("capacity".equals(entry.getKey().substring(queuePath.length() + 1))) {
                 queue.setCapacity(Float.parseFloat(entry.getValue().toString()));
-            } else if ("maximum-capacity".equals(entry.getKey())) {
+            } else if ("maximum-capacity".equals(entry.getKey().substring(queuePath.length() + 1))) {
                 queue.setMaximumCapacity(Float.parseFloat(entry.getValue().toString()));
-            } else if ("minimum-user-limit-percent".equals(entry.getKey())) {
+            } else if ("minimum-user-limit-percent".equals(entry.getKey().substring(queuePath.length() + 1))) {
                 queue.setMinimumUserLimitPercent(Integer.parseInt(entry.getValue().toString()));
-            } else if ("user-limit-factor".equals(entry.getKey())) {
+            } else if ("user-limit-factor".equals(entry.getKey().substring(queuePath.length() + 1))) {
                 queue.setUserLimitFactor(Float.parseFloat(entry.getValue().toString()));
-            } else if ("ordering-policy".equals(entry.getKey())) {
+            } else if ("ordering-policy".equals(entry.getKey().substring(queuePath.length() + 1))) {
                 queue.setOrderingPolicy(entry.getValue().toString());
-            } else if ("priority".equals(entry.getKey())) {
+            } else if ("priority".equals(entry.getKey().substring(queuePath.length() + 1))) {
                 queue.setPriority(Integer.parseInt(entry.getValue().toString()));
             }
         }
