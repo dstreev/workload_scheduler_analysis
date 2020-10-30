@@ -42,6 +42,8 @@ FROM
     INTERVAL_USAGE
 ORDER BY
     RPT_DT;
+
+
 -- Average Cluster Usage by 'Scale'
 WITH
     INTERVAL_USAGE AS
