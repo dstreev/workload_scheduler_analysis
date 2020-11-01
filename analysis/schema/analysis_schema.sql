@@ -1,17 +1,25 @@
+-- EXTERNAL LANDING LOCATION
+CREATE DATABASE IF NOT EXISTS ${DB}_source;
+-- MANAGED DB
 CREATE DATABASE IF NOT EXISTS ${DB};
-USE ${DB};
 
-DROP TABLE IF EXISTS QUEUE;
+-- NOTE: Where you see table names in lower case, this is important because
+--       it matches the names of the folders populated by the load process
+--       which is lowercase
 
-DROP TABLE IF EXISTS hierarchy;
+USE ${DB}_source;
 
-CREATE EXTERNAL TABLE IF NOT EXISTS hierarchy (
-    PARENT STRING,
-    CHILD STRING,
-    CAPACITY DOUBLE,
-    MAX_CAPACITY DOUBLE
-);
 
+-- DROP TABLE IF EXISTS hierarchy;
+--
+-- CREATE EXTERNAL TABLE IF NOT EXISTS hierarchy (
+--                                                   PARENT STRING,
+--                                                   CHILD STRING,
+--                                                   CAPACITY DOUBLE,
+--                                                   MAX_CAPACITY DOUBLE
+-- );
+
+DROP TABLE IF EXISTS queue;
 CREATE EXTERNAL TABLE IF NOT EXISTS queue
 (
     REPORTING_TS                     STRING,
@@ -64,7 +72,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS queue
     DEFAULT_APPLICATION_LIFETIME     STRING
 );
 
-DROP TABLE IF EXISTS QUEUE_USAGE;
+DROP TABLE IF EXISTS queue_usage;
 
 CREATE EXTERNAL TABLE IF NOT EXISTS queue_usage
 (
@@ -100,3 +108,75 @@ CREATE EXTERNAL TABLE IF NOT EXISTS queue_usage
     USER_RESOURCES_USED_MEMORY      BIGINT,
     USER_RESOURCES_USED_VCORES      BIGINT
 );
+
+DROP TABLE IF EXISTS app;
+
+CREATE EXTERNAL TABLE IF NOT EXISTS app
+(
+    REPORTING_TS                   STRING,
+    ID                             STRING,
+    USER_                          STRING,
+    NAME                           STRING,
+    QUEUE                          STRING,
+    STATE                          STRING,
+    FINAL_STATUS                   STRING,
+    PROGRESS                       STRING,
+    TRACKING_UI                    STRING,
+    TRACKING_URL                   STRING,
+    DIAGNOSTICS                    STRING,
+    CLUSTER_ID                     STRING,
+    APPLICATION_TYPE               STRING,
+    APPLICATION_TAGS               STRING,
+    PRIORITY                       STRING,
+    STARTED_TIME                   STRING,
+    LAUNCH_TIME                    BIGINT,
+    FINISHED_TIME                  BIGINT,
+    ELAPSED_TIME                   BIGINT,
+    AM_CONTAINER_LOGS              STRING,
+    AM_HOST_HTTP_ADDRESS           STRING,
+    AM_RPC_ADDRESS                 STRING,
+    MASTER_NODE_ID                 STRING,
+    ALLOCATED_MB                   BIGINT,
+    ALLOCATED_VCORES               BIGINT,
+    RESERVED_MB                    BIGINT,
+    RESERVED_VCORES                BIGINT,
+    RUNNING_CONTAINERS             INT,
+    MEMORY_SECONDS                 BIGINT,
+    VCORE_SECONDS                  BIGINT,
+    QUEUE_USAGE_PERCENTAGE         FLOAT,
+    CLUSTER_USAGE_PERCENTAGE       FLOAT,
+    PREEMPTED_RESOURCE_MB          BIGINT,
+    PREEMPTED_RESOURCE_VCORES      BIGINT,
+    NUM_NON_AM_CONTAINER_PREEMPTED INT,
+    NUM_AM_CONTAINER_PREEMPTED     INT,
+    LOG_AGGREGATION_STATUS         STRING,
+    UNMANAGED_APPLICATION          STRING,
+    APP_NODE_LABEL_EXPRESSION      STRING,
+    AM_NODE_LABEL_EXPRESSION       STRING
+);
+
+USE ${DB};
+
+-- Create Managed Version
+DROP TABLE app;
+CREATE TABLE app LIKE ${DB}_source.app
+STORED AS ORC;
+-- Change the Location to the Managed Warehouse
+-- Bug Filed for this: https://jira.cloudera.com/browse/CDPD-18875
+ALTER TABLE app SET LOCATION "/warehouse/tablespace/managed/hive/${DB}.db/app";
+
+DROP TABLE queue;
+CREATE TABLE queue LIKE ${DB}_source.queue
+STORED AS ORC;
+-- Change the Location to the Managed Warehouse
+-- Bug Filed for this: https://jira.cloudera.com/browse/CDPD-18875
+ALTER TABLE queue SET LOCATION "/warehouse/tablespace/managed/hive/${DB}.db/queue";
+
+
+DROP TABLE queue_usage;
+CREATE TABLE queue_usage LIKE ${DB}_source.queue_usage
+STORED AS ORC;
+-- Change the Location to the Managed Warehouse
+-- Bug Filed for this: https://jira.cloudera.com/browse/CDPD-18875
+ALTER TABLE queue_usage SET LOCATION "/warehouse/tablespace/managed/hive/${DB}.db/queue_usage";
+

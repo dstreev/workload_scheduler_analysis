@@ -43,7 +43,6 @@ WHERE
 WITH
     USER_TEZ_CONSUMPTION AS (
         SELECT
-            substring(REPORTING_TS, 0, 10) AS RPT_DT,
             REPORTING_TS,
             USER_,
             QUEUE,
@@ -60,7 +59,6 @@ WITH
     ),
     USER_NON_TEZ_CONSUMPTION AS (
         SELECT
-            substring(REPORTING_TS, 0, 10) AS RPT_DT,
             REPORTING_TS,
             USER_,
             QUEUE,
@@ -88,7 +86,7 @@ WITH
 -- List of Top Consumer by Memory Consumption, by Day
 ----------------------------------------------------------------------------------------
 SELECT
-    CC.RPT_DT,
+    substring(CC.REPORTING_TS, 0, 10) AS REPORTING_DT,
     CC.USER_,
     CC.QUEUE,
     CC.TYPE,
@@ -110,11 +108,11 @@ SELECT
 FROM
     COMBINED_CONSUMPTION CC
 WHERE
-    CC.REPORTING_TS LIKE "${RPT_DT}"
+    CC.REPORTING_TS LIKE "${RPT_DT}%"
 GROUP BY
-    RPT_DT, USER_, QUEUE, TYPE, MEMORY_SECONDS, ELAPSED_TIME
+    REPORTING_DT, USER_, QUEUE, TYPE, MEMORY_SECONDS, ELAPSED_TIME
 ORDER BY
-    RPT_DT, JOB_TOTAL_GB_MEMORY_MINUTES DESC;
+    REPORTING_DT, JOB_TOTAL_GB_MEMORY_MINUTES DESC;
 
 
 -- Template
