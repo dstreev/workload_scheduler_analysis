@@ -36,7 +36,7 @@ WITH
         FROM
             QUEUE Q
         WHERE
-              Q.REPORTING_TS LIKE "${RPT_DT}"
+              Q.REPORTING_TS LIKE "${RPT_DT}%"
           AND Q.PENDING_CONTAINERS > 0
           AND Q.QUEUE_NAME LIKE "${QUEUE}"
               -- Considering default queue a scratch, non-sla work area.  No guarantees.
@@ -82,7 +82,7 @@ WITH
         FROM
             QUEUE Q
         WHERE
-              Q.REPORTING_TS LIKE "${RPT_DT}"
+              Q.REPORTING_TS LIKE "${RPT_DT}%"
           AND Q.PENDING_CONTAINERS > 0
           AND Q.QUEUE_NAME LIKE "${QUEUE}"
     ),
@@ -186,16 +186,16 @@ WITH
 -- Potential Excess Required Capacity Occurrences Summary (exceeds cluster capacity)
 --  From a macro level this shows the overall effect of this on the cluster
 ---------------------------------------------------------------
--- SELECT
---     SUBSTRING(OC.RPT_MN, 0, 10) AS REPORTING_DATE,
---     SUM(OC.UNDER_CAPACITY)      AS UNDER_CAPACITY_COUNT,
---     SUM(OC.OVER_CAPACITY)       AS OVER_CAPACITY_COUNT
--- FROM
---     EXCESS_OCCURRENCES_COUNT OC
--- GROUP BY
---     SUBSTRING(OC.RPT_MN, 0, 10)
--- ORDER BY
---     REPORTING_DATE;
+SELECT
+    SUBSTRING(OC.RPT_MN, 0, 10) AS REPORTING_DATE,
+    SUM(OC.UNDER_CAPACITY)      AS UNDER_CAPACITY_COUNT,
+    SUM(OC.OVER_CAPACITY)       AS OVER_CAPACITY_COUNT
+FROM
+    EXCESS_OCCURRENCES_COUNT OC
+GROUP BY
+    SUBSTRING(OC.RPT_MN, 0, 10)
+ORDER BY
+    REPORTING_DATE;
 
 ---------------------------------------------------------------
 -- QUERY #2
@@ -254,33 +254,31 @@ WITH
 -- When there are 'pending' containers in the cluster, what is the LOST opportunity of the cluster
 -- if we could find a way run those containers.
 ---------------------------------------------------------------
-SELECT
-    RPT_MN,
-    ACTUAL_USED,
-    ESTIMATED_USED,
-    CASE
-        WHEN (ESTIMATED_USED > 100) THEN
-            ROUND(100 - ACTUAL_USED, 2)
-        ELSE
-            ROUND(ESTIMATED_USED - ACTUAL_USED, 2)
-        END AS LOST_OPPORTUNITY
-FROM
-    ESTIMATED_UTILIZATION_VS_ACTUAL
-ORDER BY
-    RPT_MN;
-
-
+-- SELECT
+--     RPT_MN,
+--     ACTUAL_USED,
+--     ESTIMATED_USED,
+--     CASE
+--         WHEN (ESTIMATED_USED > 100) THEN
+--             ROUND(100 - ACTUAL_USED, 2)
+--         ELSE
+--             ROUND(ESTIMATED_USED - ACTUAL_USED, 2)
+--         END AS LOST_OPPORTUNITY
+-- FROM
+--     ESTIMATED_UTILIZATION_VS_ACTUAL
+-- ORDER BY
+--     RPT_MN;
 
 
 ---------------------------------------------------------------
 -- RAW DATA TimeBlocks With Contention
 ---------------------------------------------------------------
-SELECT
-    TBWC.*
-FROM
-    TIMEBLOCKS_WITH_CONTENTION TBWC
-ORDER BY
-    TBWC.RPT_MN, TBWC.QUEUE_PATH, TBWC.QUEUE_NAME;
+-- SELECT
+--     TBWC.*
+-- FROM
+--     TIMEBLOCKS_WITH_CONTENTION TBWC
+-- ORDER BY
+--     TBWC.RPT_MN, TBWC.QUEUE_PATH, TBWC.QUEUE_NAME;
 
 ---------------------------------------------------------------
 -- RAW DATA - Pending Queues
@@ -312,10 +310,10 @@ ORDER BY
 ---------------------------------------------------------------
 -- Total event count for under cap with pending.
 ---------------------------------------------------------------
-SELECT
-    COUNT(1)
-FROM
-    UNDER_CAP_WITH_PENDING;
+-- SELECT
+--     COUNT(1)
+-- FROM
+--     UNDER_CAP_WITH_PENDING;
 
 -- Look at the users in the above results.  We're looking for 'non-impersonation'
 -- and user usage patterns.  Especially when in the same queue.
@@ -327,3 +325,100 @@ FROM
 -- Use this point in time to determine if the SLA requirements of other queues
 --    is being pressed.
 -- If there room left in SLA capacity, then we should be able to flex the queue.
+
+
+---------------------------------------------------------------
+-- Applications Running in 'queue' during 'time'
+---------------------------------------------------------------
+SELECT
+    Q.REPORTING_TS,
+    A.QUEUE,
+    Q.ABSOLUTE_CAPACITY,
+    Q.ABSOLUTE_USED_CAPACITY,
+    A.APPLICATION_TYPE,
+    A.FINAL_STATUS,
+    COUNT(1)                                  AS JOB_COUNT,
+    SUM(A.ELAPSED_TIME)                       AS TOTAL_ELAPSED_JOB_TIME,
+    ROUND(SUM(A.ELAPSED_TIME) / 1000 / 60, 2) AS CUMMULATIVE_RUNTIME_MINS,
+    COLLECT_LIST(A.ID)                        AS APP_IDS,
+    COLLECT_LIST(A.USER_)                     AS USERS,
+    COLLECT_LIST(A.NAME)                      AS APP_NAMES,
+    COLLECT_LIST(A.APPLICATION_TAGS)          AS APP_TAGS
+FROM
+    APP A
+        INNER JOIN QUEUE Q
+                   ON A.QUEUE = Q.QUEUE_NAME
+WHERE
+        CAST(A.STARTED_TIME AS BIGINT) < unix_timestamp("${RPT_MN}", "yyyy-MM-dd HH:mm") * 1000
+  AND   CAST(A.FINISHED_TIME AS BIGINT) > unix_timestamp("${RPT_MN}", "yyyy-MM-dd HH:mm") * 1000
+  AND   A.QUEUE LIKE "${QUEUE}"
+  AND   Q.REPORTING_TS LIKE "${RPT_MN}%"
+GROUP BY
+    Q.REPORTING_TS,
+    A.QUEUE,
+    Q.ABSOLUTE_CAPACITY,
+    Q.ABSOLUTE_USED_CAPACITY,
+    A.APPLICATION_TYPE,
+    A.FINAL_STATUS
+ORDER BY
+    A.QUEUE;
+
+-------------------------------------------------------------------------
+-- Top 10 Application Failures in Queues running at or above Capacity
+-------------------------------------------------------------------------
+WITH
+    TOP_ELAPSED_FAILED_APPS AS (
+        SELECT
+            A.REPORTING_TS,
+            A.QUEUE,
+            from_unixtime(CAST(A.STARTED_TIME / 1000 AS BIGINT))             AS STARTED_TIME,
+            from_unixtime(CAST(A.FINISHED_TIME / 1000 AS BIGINT))            AS FINISHED_TIME,
+            A.APPLICATION_TYPE,
+            A.ELAPSED_TIME,
+            A.FINAL_STATUS,
+            A.ID,
+            rank() OVER ( PARTITION BY A.QUEUE ORDER BY A.ELAPSED_TIME DESC) AS RNK
+        FROM
+            APP A
+        WHERE
+            A.FINAL_STATUS = "FAILED"
+    )
+SELECT *
+FROM
+    TOP_ELAPSED_FAILED_APPS TFA
+WHERE
+      TFA.REPORTING_TS LIKE "${RPT_DT}%"
+  AND TFA.RNK < 11
+ORDER BY
+    TFA.QUEUE, TFA.RNK;
+
+SELECT *
+FROM
+    APP
+WHERE
+    ID = "${APP_ID}";
+
+SELECT
+    A.QUEUE,
+    A.ID                                      AS APP_ID,
+    A.APPLICATION_TYPE,
+    MIN(Q.ABSOLUTE_CAPACITY)                  AS ABS_CAPACITY,
+    MIN(Q.ABSOLUTE_USED_CAPACITY)             AS ABS_MIN_CAPACITY,
+    MAX(Q.ABSOLUTE_USED_CAPACITY)             AS ABS_MAX_CAPACITY,
+    A.FINAL_STATUS,
+    COUNT(1)                                  AS JOB_COUNT,
+    SUM(A.ELAPSED_TIME)                       AS TOTAL_ELAPSED_JOB_TIME,
+    ROUND(SUM(A.ELAPSED_TIME) / 1000 / 60, 2) AS CUMMULATIVE_RUNTIME_MINS,
+    COLLECT_LIST(A.ID)                        AS APP_IDS,
+    COLLECT_LIST(A.USER_)                     AS USERS,
+    COLLECT_LIST(A.NAME)                      AS APP_NAMES,
+    COLLECT_LIST(A.APPLICATION_TAGS)          AS APP_TAGS
+
+FROM
+    APP A
+        INNER JOIN QUEUE Q
+                   ON A.QUEUE = Q.QUEUE_NAME
+WHERE
+      A.FINAL_STATUS = "FAILED"
+  AND A.REPORTING_TS LIKE "${RPT_DT}%";
+
