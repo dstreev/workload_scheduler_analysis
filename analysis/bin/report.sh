@@ -14,6 +14,12 @@ echo "Reporting Date:             ${RPT_DT}"
 echo "Reporting Output Directory: ${RPT_DIR}"
 echo "================================================================"
 
+echo "Are these the values you want to use?  "
+echo "If not, set env variables "
+echo "      WORKLOAD_DB, REPORTING_DT, and REPORTING_DIR to override."
+
+pause
+
 # Cycle through the Analysis Reports
 for i in {1..11}; do
   echo "Running Analysis: ${i}"
