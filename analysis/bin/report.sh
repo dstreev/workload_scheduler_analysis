@@ -4,7 +4,7 @@ cd `dirname $0`
 
 DB=${WORKLOAD_DB:-workload-analysis}
 RPT_DT=${REPORTING_DT:-`date +%Y-%m-%d`}
-RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/`date +%Y-%m-%d`}
+RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/${DB}/`date +%Y-%m-%d`}
 
 mkdir -p $RPT_DIR
 
