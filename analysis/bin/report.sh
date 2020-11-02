@@ -21,7 +21,9 @@ echo "      WORKLOAD_DB, REPORTING_DT, and REPORTING_DIR to override."
 echo "Continue? (y)/n"
 read cont
 
-if [ $cont != "y" ]; then
+RUN_THIS=${cont:-y}
+
+if [ "$RUN_THIS" != "y" ]; then
   echo "Aborted"
   return -1
 fi
