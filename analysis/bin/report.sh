@@ -25,7 +25,7 @@ RUN_THIS=${cont:-y}
 
 if [ "$RUN_THIS" != "y" ]; then
   echo "Aborted"
-  return 1
+  exit 1
 fi
 
 # Cycle through the Analysis Reports
