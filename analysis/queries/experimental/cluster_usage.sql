@@ -80,6 +80,7 @@ GROUP BY
     SUBSTRING(RPT_MN, 0, ${SCALE})
 ORDER BY
     RPT_INTERVAL;
+
 -- Usage in Queue with number of users vs. the userlimit factor.
 -- When there are pending containers
 SELECT
@@ -116,6 +117,7 @@ ORDER BY
     RPT_DT,
     QUEUE_PATH,
     QUEUE_NAME;
+
 -- Cluster Utilization at points when there are "pending" container requests.
 -- When there are pending containers, check for Queue full use. And identify how many
 -- users are in the queue.  Mix together the configurations for User_Limits for comparison.
