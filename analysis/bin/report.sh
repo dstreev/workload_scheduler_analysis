@@ -18,7 +18,13 @@ echo "Are these the values you want to use?  "
 echo "If not, set env variables "
 echo "      WORKLOAD_DB, REPORTING_DT, and REPORTING_DIR to override."
 
-pause
+echo "Continue? (y)/n"
+read cont
+
+if [ $cont != "y" ]; then
+  echo "Aborted"
+  return -1
+fi
 
 # Cycle through the Analysis Reports
 for i in {1..11}; do
