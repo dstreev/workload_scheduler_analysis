@@ -10,7 +10,10 @@ cat $FILE | sed 's/$/|/g' | sed 's/^/|/g' > $FILE.md
 head -n 1 $FILE.md > $FILE.hdr
 
 # Get the first line and build a header row from it.
-cat $FILE.hdr | sed 's/\([a-z]\)//g' | sed 's/_//g' | sed 's/\|/\| /g' | sed 's/ $//g' | sed 's/ /:---/g' >> $FILE.hdr
+# Strip letters, Strip '_', Strip '.',
+cat $FILE.hdr | sed 's/\([a-z]\)//g' | sed 's/_//g' | sed 's/\.//g' | sed 's/\|/\|:---/g' | sed 's/:---$//g' >> $FILE.hdr
+#cat $FILE.hdr | sed 's/\([a-z]\)//g' | sed 's/_//g' | sed 's/\.//g' | sed 's/\|/\| /g' | sed 's/ $//g' | sed 's/ /:---/g' >> $FILE.hdr
+#cat $FILE.hdr | sed 's/\([a-z]\)//g' | sed 's/_//g' | sed 's/ $//g' | sed 's/\.//g' | sed 's/ /:---/g' >> $FILE.hdr
 
 tail -n +2 $FILE.md > $FILE.data
 
