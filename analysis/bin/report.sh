@@ -35,5 +35,19 @@ for i in {1..12}; do
     echo "-----------------------------------------------------------------"
     hive --hivevar DB=${DB} --hivevar RPT_DT=${RPT_DT} --silent=false --outputformat=dsv --showHeader=true -f ../queries/analysis_${i}.sql >${RPT_DIR}/ANALYSIS_RPT_${i}.txt
     echo "-----------------------------------------------------------------"
+    ./toMD.sh ${RPT_DIR}/ANALYSIS_RPT_${i}.txt
+  fi
+done
+
+if [ -f ${RPT_DIR}/REPORT.md ]; then
+  rm ${RPT_DIR}/REPORT.md
+fi
+
+## Build Report
+for i in {1..12}; do
+  if [ -f ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md ]; then
+    cat ../queries/analysis_${i}.md >> ${RPT_DIR}/REPORT.md
+    cat {RPT_DIR}/ANALYSIS_RPT_${i}.txt.md >> ${RPT_DIR}/REPORT.md
+    echo " " >> ${RPT_DIR}/REPORT.md
   fi
 done
