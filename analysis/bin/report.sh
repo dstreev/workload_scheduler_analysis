@@ -29,7 +29,7 @@ if [ "$RUN_THIS" != "y" ]; then
 fi
 
 # Cycle through the Analysis Reports
-for i in {1..12}; do
+for i in {1..13}; do
   if [ -f ../queries/analysis_${i}.sql ]; then
     echo "Running Analysis: ${i}"
     echo "-----------------------------------------------------------------"
@@ -44,7 +44,7 @@ if [ -f ${RPT_DIR}/REPORT.md ]; then
 fi
 
 ## Build Report
-for i in {1..12}; do
+for i in {1..13}; do
   if [ -f ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md ]; then
     cat ../queries/analysis_${i}.md >> ${RPT_DIR}/REPORT.md
     cat ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md >> ${RPT_DIR}/REPORT.md
