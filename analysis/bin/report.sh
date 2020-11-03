@@ -30,10 +30,10 @@ fi
 
 # Cycle through the Analysis Reports
 for i in {1..12}; do
-  if [ -f analysis/analysis_${i}.sql ]; then
+  if [ -f ../queries/analysis_${i}.sql ]; then
     echo "Running Analysis: ${i}"
     echo "-----------------------------------------------------------------"
-    hive --hivevar DB=${DB} --hivevar RPT_DT=${RPT_DT} --silent=false --outputformat=tsv2 --showHeader=true -f analysis/analysis_${i}.sql >${RPT_DIR}/RPT_${i}.txt
+    hive --hivevar DB=${DB} --hivevar RPT_DT=${RPT_DT} --silent=false --outputformat=tsv2 --showHeader=true -f ../queries/analysis_${i}.sql >${RPT_DIR}/RPT_${i}.txt
     echo "-----------------------------------------------------------------"
   fi
 done
