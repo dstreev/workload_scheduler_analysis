@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-cd `dirname $0`
+cd $(dirname $0)
 
 DB=${WORKLOAD_DB:-workload-analysis}
-RPT_DT=${REPORTING_DT:-`date +%Y-%m-%d`}
-RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/${DB}/`date +%Y-%m-%d`}
+RPT_DT=${REPORTING_DT:-$(date +%Y-%m-%d)}
+RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/${DB}/$(date +%Y-%m-%d)}
 
 mkdir -p $RPT_DIR
 
@@ -30,8 +30,10 @@ fi
 
 # Cycle through the Analysis Reports
 for i in {1..12}; do
-  echo "Running Analysis: ${i}"
-  echo "-----------------------------------------------------------------"
-  hive --hivevar DB=${DB} --hivevar RPT_DT=${RPT_DT} --silent=false --outputformat=tsv2 --showHeader=true -f analysis/analysis_${i}.sql > ${RPT_DIR}/RPT_${i}.txt
-  echo "-----------------------------------------------------------------"
+  if [ -f analysis/analysis_${i}.sql ]; then
+    echo "Running Analysis: ${i}"
+    echo "-----------------------------------------------------------------"
+    hive --hivevar DB=${DB} --hivevar RPT_DT=${RPT_DT} --silent=false --outputformat=tsv2 --showHeader=true -f analysis/analysis_${i}.sql >${RPT_DIR}/RPT_${i}.txt
+    echo "-----------------------------------------------------------------"
+  fi
 done
