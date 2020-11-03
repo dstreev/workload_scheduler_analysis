@@ -47,7 +47,7 @@ fi
 for i in {1..12}; do
   if [ -f ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md ]; then
     cat ../queries/analysis_${i}.md >> ${RPT_DIR}/REPORT.md
-    cat {RPT_DIR}/ANALYSIS_RPT_${i}.txt.md >> ${RPT_DIR}/REPORT.md
+    cat ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md >> ${RPT_DIR}/REPORT.md
     echo " " >> ${RPT_DIR}/REPORT.md
   fi
 done
