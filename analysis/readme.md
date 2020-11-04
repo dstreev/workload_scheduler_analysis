@@ -69,4 +69,12 @@ The `-o` option is an HDFS location.  When prefixed with `/`, it is an absolute 
 
 In the output directory, three sub-directories will be created/used: `app, queue, queue_usage`.  When the location is set to the expected *source* database location in hive's external warehouse directory, your table configuration will pick up the values automatically.
 
-## 
+## Reporting
+
+The reports are all Markdown.
+
+### Tooling
+
+- Install [Python3](https://www.liquidweb.com/kb/how-to-install-python-3-on-centos-7/) on running node (preferably an edge node, not a master or worker)
+- Markdown [Table of Contents](https://pypi.org/project/markdown-toc/) generator.
+

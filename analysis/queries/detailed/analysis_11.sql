@@ -3,7 +3,7 @@ USE ${DB};
 -------------------------------------------------------------------------
 -- Query #11
 -- Usage in Queue with number of users vs. the userlimit factor.
--- When there are pending containers AND the Queue isn't 95% utilized.
+-- When there are pending containers
 -------------------------------------------------------------------------
 SELECT
     SUBSTRING(Q.REPORTING_TS, 0, 16) AS RPT_DT,
@@ -28,7 +28,6 @@ WHERE
       Q.REPORTING_TS LIKE "${RPT_DT}%"
   AND Q.QUEUE_NAME != "default"
   AND Q.PENDING_CONTAINERS > 0
-  AND Q.ABSOLUTE_USED_CAPACITY < (Q.ABSOLUTE_CAPACITY * 0.95)
 GROUP BY
     SUBSTRING(Q.REPORTING_TS, 0, 16),
     Q.QUEUE_PATH,

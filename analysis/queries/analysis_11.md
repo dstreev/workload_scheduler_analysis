@@ -1,9 +1,7 @@
-## Query #11 
+### Query #11 - Queue Imbalance with User Count
 
-Usage in Queue with number of users vs. the userlimit factor.
-
-When there are pending containers
+Usage in Queue with number of users vs. the userlimit factor when there are pending containers AND the queue isn't fully utilized.
 
 Excludes 'default' queue.
 
-### Dataset
+#### Dataset
