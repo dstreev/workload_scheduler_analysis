@@ -55,7 +55,7 @@ for i in {1..99}; do
     echo "-----------------------------------------------------------------"
     hive --hivevar DB=${DB} --hivevar RPT_DT=${RPT_DT} --silent=false --outputformat=dsv --showHeader=true -f ../queries/detailed/analysis_${i}.sql >${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt
     echo "-----------------------------------------------------------------"
-    ./toMD.sh ${RPT_DIR}/ANALYSIS_RPT_${i}.txt
+    ./toMD.sh ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt
   fi
 done
 
