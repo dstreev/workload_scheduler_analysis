@@ -62,10 +62,10 @@ done
 #if [ -f ${RPT_DIR}/REPORT.md ]; then
 #  rm ${RPT_DIR}/REPORT.md
 #fi
+# Report Header
 cat ../queries/header.md > ${RPT_DIR}/REPORT.md
 
 ## Build Report
-cat ../queries/header.md >> ${RPT_DIR}/REPORT.md
 for i in {1..99}; do
   if [ -f ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md ]; then
     cat ../queries/analysis_${i}.md >> ${RPT_DIR}/REPORT.md
@@ -85,8 +85,8 @@ for i in {1..99}; do
 done
 
 ## Build Report Appendix
-cat ../report_appendix/appendix.md >> ${RPT_DIR}/REPORT.md
-for file in `ls ../report_appendix/*.md`; do
+cat ../report_appendix/report_appendix.md >> ${RPT_DIR}/REPORT.md
+for file in `ls ../report_appendix/appendix_*.md`; do
   cat $file >> ${RPT_DIR}/REPORT.md
   echo " " >> ${RPT_DIR}/REPORT.md
 done
