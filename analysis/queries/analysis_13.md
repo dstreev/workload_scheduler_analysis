@@ -1,4 +1,4 @@
-### Query 13 - Categorize TEZ Workloads
+### All TEZ Workloads
 
 This query depends on Tez Application Tags supporting userid...
 

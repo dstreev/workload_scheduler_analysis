@@ -1,4 +1,6 @@
-### Query 10 - Top 10 Application Failures in Queues with 'pending containers' - DETAILED
+### Top Application Failures
+ 
+With 'Pending Containers'
 
 Excludes 'default' queue.
 

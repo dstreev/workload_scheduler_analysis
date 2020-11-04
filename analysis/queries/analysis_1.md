@@ -1,4 +1,4 @@
-### Query 1 - Requests Exceeds Capacity
+### Requests Exceeds Capacity
 
 Potential Excess Required Capacity Occurrences Summary (exceeds cluster capacity)
 

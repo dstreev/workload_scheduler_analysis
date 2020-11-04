@@ -1,4 +1,4 @@
-### Query 2 - Queues NOT meeting potential
+### NOT meeting potential
 
 Queues Running under capacity with Pending Containers
 
