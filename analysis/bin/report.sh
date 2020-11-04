@@ -8,6 +8,11 @@ DB=${WORKLOAD_DB:-workload-analysis}
 RPT_DT=${REPORTING_DT:-$(date +%Y-%m-%d)}
 RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/${DB}/${RPT_DT}}
 
+if [ -d ${RPT_DIR} ]; then
+  # Delete Previous Results
+  rm -r -f ${RPT_DIR}
+fi
+
 mkdir -p $RPT_DIR
 
 echo "================================================================"
@@ -46,7 +51,7 @@ done
 
 for i in {1..99}; do
   if [ -f ../queries/detailed/analysis_${i}.sql ]; then
-    echo "Running Analysis: ${i}"
+    echo "Running Detailed Analysis: ${i}"
     echo "-----------------------------------------------------------------"
     hive --hivevar DB=${DB} --hivevar RPT_DT=${RPT_DT} --silent=false --outputformat=dsv --showHeader=true -f ../queries/detailed/analysis_${i}.sql >${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt
     echo "-----------------------------------------------------------------"
