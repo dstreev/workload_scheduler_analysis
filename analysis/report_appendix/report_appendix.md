@@ -1,2 +1,4 @@
-## [Appendix](#yarn-queue-evaluation-report)
+## Appendix
+
+[TOC](#table-of-contents)
 
