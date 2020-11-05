@@ -1,7 +1,5 @@
 ### Requests Exceeds Capacity
 
-[TOC](#table-of-contents)
-
 Potential Excess Required Capacity Occurrences Summary (exceeds cluster capacity)
 
 This report maybe an indication at certain points in the day that there aren't enough cluster resources to address the demand, even if that demand were allowed to consume all remaining cluster resources.

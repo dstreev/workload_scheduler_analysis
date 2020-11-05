@@ -1,7 +1,5 @@
 ### NOT meeting potential
 
-[TOC](#table-of-contents)
-
 Queues Running under capacity with Pending Containers
 
 Indicates a queue is constrained and not utilizing all the queues guaranteed resources.
@@ -13,8 +11,6 @@ This is possible under two conditions:
 This practice was popular in older Hadoop versions when Hive ran with `impersonation` (doas=true).  In Hive 3 (HDP 3.1.5+ and CDP), it's advisable to run Hive in `non-impersonation` mode (doas=false).  Under previous configurations using `user-limit-factor`, `minimum-user-limit-percent`, and `queue-mappings` to route and control applications, a few adjustments need to be made.  Without changes, the `non-impersonation` user (hive) which runs all hive jobs, will be artificially restricted.
 
 When using hive with `non-impersonation`, configure YARN/Hive to pass-through and honor submitting user details if you are using `queue-mappings`.
-
-
 
 **Dataset**
 

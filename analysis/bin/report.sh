@@ -70,7 +70,7 @@ for i in {1..99}; do
   if [ -f ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md ]; then
     cat ../queries/analysis_${i}.md >> ${RPT_DIR}/REPORT.md
     cat ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md >> ${RPT_DIR}/REPORT.md
-    echo " " >> ${RPT_DIR}/REPORT.md
+    cat ../queries/toc_ref.md >> ${RPT_DIR}/REPORT.md
   fi
 done
 
@@ -80,7 +80,7 @@ for i in {1..99}; do
   if [ -f ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md ]; then
     cat ../queries/detailed/analysis_${i}.md >> ${RPT_DIR}/REPORT.md
     cat ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md >> ${RPT_DIR}/REPORT.md
-    echo " " >> ${RPT_DIR}/REPORT.md
+    cat ../queries/toc_ref.md >> ${RPT_DIR}/REPORT.md
   fi
 done
 
@@ -88,8 +88,8 @@ done
 cat ../report_appendix/report_appendix.md >> ${RPT_DIR}/REPORT.md
 for file in `ls ../report_appendix/appendix_*.md`; do
   cat $file >> ${RPT_DIR}/REPORT.md
-  echo " " >> ${RPT_DIR}/REPORT.md
+  cat ../queries/toc_ref.md >> ${RPT_DIR}/REPORT.md
 done
 
 ## Build TOC for Report
-markdown-toc -h 3 -t github ${RPT_DIR}/REPORT.md
+#markdown-toc -h 3 -t github ${RPT_DIR}/REPORT.md
