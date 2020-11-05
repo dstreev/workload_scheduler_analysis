@@ -23,19 +23,19 @@ echo "Reporting Date:             ${RPT_DT}"
 echo "Reporting Output Directory: ${RPT_DIR}"
 echo "================================================================"
 
-echo "Are these the values you want to use?  "
-echo "If not, set env variables "
-echo "      WORKLOAD_DB, REPORTING_DT, and REPORTING_DIR to override."
+#echo "Are these the values you want to use?  "
+#echo "If not, set env variables "
+#echo "      WORKLOAD_DB, REPORTING_DT, and REPORTING_DIR to override."
 
-echo "Continue? (y)/n"
-read cont
+#echo "Continue? (y)/n"
+#read cont
 
-RUN_THIS=${cont:-y}
+#RUN_THIS=${cont:-y}
 
-if [ "$RUN_THIS" != "y" ]; then
-  echo "Aborted"
-  exit 1
-fi
+#if [ "$RUN_THIS" != "y" ]; then
+#  echo "Aborted"
+#  exit 1
+#fi
 
 # Generate Header TODO
 # Add report variables to report output.
