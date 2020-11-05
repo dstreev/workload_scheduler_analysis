@@ -75,10 +75,5 @@ The reports are all Markdown.
 
 ### Tooling
 
-Install `npm` - `yum install npm`
-Install `markdown-toc` - `npm install --save markdown-toc`
-
-### OLD
-- Install [Python3](https://www.liquidweb.com/kb/how-to-install-python-3-on-centos-7/) on running node (preferably an edge node, not a master or worker)
-- Markdown [Table of Contents](https://pypi.org/project/markdown-toc/) generator.
+[Markdown TOC Creator](https://github.com/ekalinin/github-markdown-toc#auto-insert-and-update-toc)
 

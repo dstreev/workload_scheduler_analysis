@@ -8,6 +8,8 @@ DB=${WORKLOAD_DB:-workload-analysis}
 RPT_DT=${REPORTING_DT:-$(date +%Y-%m-%d)}
 RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/${DB}/${RPT_DT}}
 
+RPT_FILE=${RPT_DIR}/REPORT_${RPT_DT}.md
+
 if [ -d ${RPT_DIR} ]; then
   # Delete Previous Results
   rm -r -f ${RPT_DIR}
@@ -63,33 +65,33 @@ done
 #  rm ${RPT_DIR}/REPORT.md
 #fi
 # Report Header
-cat ../queries/header.md > ${RPT_DIR}/REPORT.md
+cat ../queries/header.md > ${RPT_FILE}
 
 ## Build Report
 for i in {1..99}; do
   if [ -f ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md ]; then
-    cat ../queries/analysis_${i}.md >> ${RPT_DIR}/REPORT.md
-    cat ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md >> ${RPT_DIR}/REPORT.md
-    cat ../queries/toc_ref.md >> ${RPT_DIR}/REPORT.md
+    cat ../queries/analysis_${i}.md >> ${RPT_FILE}
+    cat ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md >> ${RPT_FILE}
+    cat ../queries/toc_ref.md >> ${RPT_FILE}
   fi
 done
 
 ## Build Report Details
-cat ../queries/detailed/detailed-header.md >> ${RPT_DIR}/REPORT.md
+cat ../queries/detailed/detailed-header.md >> ${RPT_FILE}
 for i in {1..99}; do
   if [ -f ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md ]; then
-    cat ../queries/detailed/analysis_${i}.md >> ${RPT_DIR}/REPORT.md
-    cat ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md >> ${RPT_DIR}/REPORT.md
-    cat ../queries/toc_ref.md >> ${RPT_DIR}/REPORT.md
+    cat ../queries/detailed/analysis_${i}.md >> ${RPT_FILE}
+    cat ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md >> ${RPT_FILE}
+    cat ../queries/toc_ref.md >> ${RPT_FILE}
   fi
 done
 
 ## Build Report Appendix
-cat ../report_appendix/report_appendix.md >> ${RPT_DIR}/REPORT.md
+cat ../report_appendix/report_appendix.md >> ${RPT_FILE}
 for file in `ls ../report_appendix/appendix_*.md`; do
-  cat $file >> ${RPT_DIR}/REPORT.md
-  cat ../queries/toc_ref.md >> ${RPT_DIR}/REPORT.md
+  cat $file >> ${RPT_FILE}
+  cat ../queries/toc_ref.md >> ${RPT_FILE}
 done
 
 ## Build TOC for Report
-#markdown-toc -h 3 -t github ${RPT_DIR}/REPORT.md
+gh-md-toc --insert ${RPT_FILE}
