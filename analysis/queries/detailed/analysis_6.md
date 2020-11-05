@@ -1,5 +1,5 @@
-### Lost Opportunities
+### [Lost Opportunities Detailed](#yarn-queue-evaluation-report)
 
 When there are 'pending' containers in the cluster, what is the LOST opportunity of the cluster if we could find a way run those containers.
 
-#### Dataset
+**Dataset**
