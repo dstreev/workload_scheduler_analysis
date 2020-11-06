@@ -10,10 +10,12 @@ RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/${DB}/${RPT_DT}}
 
 RPT_FILE=${RPT_DIR}/REPORT_${RPT_DT}.md
 RPT_DTL_FILE=${RPT_DIR}/REPORT_DTL_${RPT_DT}.md
-
 # Need this to build detail toc in main file.
 # Only works when the output md's are converted to html.
-RPT_DTL_FILE_HTML=${RPT_DTL_FILE:0:$((${RPT_DTL_FILE}-2))}html
+RPT_DTL_FILE_HTML="${RPT_DTL_FILE:0:$((${#RPT_DTL_FILE}-2))}html"
+#echo "*******************************************"
+#echo "$RPT_DTL_FILE_HTML"
+#echo "*******************************************"
 
 if [ -d ${RPT_DIR} ]; then
   # Delete Previous Results
