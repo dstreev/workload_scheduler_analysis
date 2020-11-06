@@ -41,7 +41,7 @@ WITH
                      REPORTING_TS LIKE "${RPT_DT}%") sub
     )
 SELECT
-    "APP",
+    "APP" AS dataset,
     MIN_RPT_DT,
     MAX_RPT_DT,
     CYCLE_COUNT
@@ -49,7 +49,7 @@ FROM
     APP_RANGE
 UNION ALL
 SELECT
-    "QUEUE",
+    "QUEUE" AS dataset,
     MIN_RPT_DT,
     MAX_RPT_DT,
     CYCLE_COUNT
@@ -57,7 +57,7 @@ FROM
     QUEUE_RANGE
 UNION ALL
 SELECT
-    "QUEUE_USAGE",
+    "QUEUE_USAGE" AS dataset,
     MIN_RPT_DT,
     MAX_RPT_DT,
     CYCLE_COUNT

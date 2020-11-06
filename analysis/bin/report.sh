@@ -75,11 +75,16 @@ done
 
 # Report Header
 cat ../queries/header.md > ${RPT_FILE}
+
+# Report Range Details
 cat ../queries/range.md >> ${RPT_FILE}
+echo " " >> ${RPT_FILE}
 echo "Hive DB:                    ${DB}" >> ${RPT_FILE}
 echo "Reporting Date:             ${RPT_DT}" >> ${RPT_FILE}
 echo " " >> ${RPT_FILE}
+cat ${RPT_DIR}/RPT_RANGE.txt.md >> ${RPT_FILE}
 
+echo " " >> ${RPT_FILE}
 echo "## Table of Contents" >> ${RPT_FILE}
 echo " " >> ${RPT_FILE}
 echo "<!--ts-->" >> ${RPT_FILE}
