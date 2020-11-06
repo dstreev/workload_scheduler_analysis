@@ -13,7 +13,7 @@ RPT_DTL_FILE=${RPT_DIR}/REPORT_DTL_${RPT_DT}.md
 
 # Need this to build detail toc in main file.
 # Only works when the output md's are converted to html.
-RPT_DTL_FILE_HTML=${RPT_DTL_FILE:0:$((${RPT_DT_FILE}-2))}html
+RPT_DTL_FILE_HTML=${RPT_DTL_FILE:0:$((${RPT_DTL_FILE}-2))}html
 
 if [ -d ${RPT_DIR} ]; then
   # Delete Previous Results
@@ -78,6 +78,12 @@ cat ../queries/header.md > ${RPT_FILE}
 cat ../queries/range.md >> ${RPT_FILE}
 echo "Hive DB:                    ${DB}" >> ${RPT_FILE}
 echo "Reporting Date:             ${RPT_DT}" >> ${RPT_FILE}
+echo " " >> ${RPT_FILE}
+
+echo "## Table of Contents" >> ${RPT_FILE}
+echo " " >> ${RPT_FILE}
+echo "<!--ts-->" >> ${RPT_FILE}
+echo "<!--te-->" >> ${RPT_FILE}
 echo " " >> ${RPT_FILE}
 
 # Build the Detailed TOC
