@@ -9,6 +9,11 @@ RPT_DT=${REPORTING_DT:-$(date +%Y-%m-%d)}
 RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/${DB}/${RPT_DT}}
 
 RPT_FILE=${RPT_DIR}/REPORT_${RPT_DT}.md
+RPT_DTL_FILE=${RPT_DIR}/REPORT_DTL_${RPT_DT}.md
+
+# Need this to build detail toc in main file.
+# Only works when the output md's are converted to html.
+RPT_DTL_FILE_HTML=${RPT_DTL_FILE:0:$((${RPT_DT_FILE}-2))}html
 
 if [ -d ${RPT_DIR} ]; then
   # Delete Previous Results
@@ -70,11 +75,20 @@ done
 
 # Report Header
 cat ../queries/header.md > ${RPT_FILE}
-
+cat ../queries/range.md >> ${RPT_FILE}
 echo "Hive DB:                    ${DB}" >> ${RPT_FILE}
 echo "Reporting Date:             ${RPT_DT}" >> ${RPT_FILE}
-echo "Reporting Output Directory: ${RPT_DIR}" >> ${RPT_FILE}
 echo " " >> ${RPT_FILE}
+
+# Build the Detailed TOC
+echo "## Detailed Reports Table of Contents" >> ${RPT_FILE}
+echo " " >> ${RPT_FILE}
+echo "* [Lost Opportunities](./${RPT_DTL_HTML}/#lost-opportunities-detailed)" >> ${RPT_FILE}
+echo "* [Cluster Used Metrics Detailed](./${RPT_DTL_HTML}/#cluster-used-metrics-detailed)" >> ${RPT_FILE}
+echo "* [Top Application Failures](./${RPT_DTL_HTML}/#top-application-failures-detailed)" >> ${RPT_FILE}
+echo "* [Queue User Count](./${RPT_DTL_HTML}/#queue-user-count-detailed)" >> ${RPT_FILE}
+echo " " >> ${RPT_FILE}
+echo "## Analysis Summaries" >> ${RPT_FILE}
 
 ## Build Report
 for i in {1..99}; do
@@ -86,12 +100,12 @@ for i in {1..99}; do
 done
 
 ## Build Report Details
-cat ../queries/detailed/detailed-header.md >> ${RPT_FILE}
+cat ../queries/detailed/detailed-header.md > ${RPT_DTL_FILE}
 for i in {1..99}; do
   if [ -f ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md ]; then
-    cat ../queries/detailed/analysis_${i}.md >> ${RPT_FILE}
-    cat ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md >> ${RPT_FILE}
-    cat ../queries/toc_ref.md >> ${RPT_FILE}
+    cat ../queries/detailed/analysis_${i}.md >> ${RPT_DTL_FILE}
+    cat ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md >> ${RPT_DTL_FILE}
+    cat ../queries/toc_ref.md >> ${RPT_DTL_FILE}
   fi
 done
 
