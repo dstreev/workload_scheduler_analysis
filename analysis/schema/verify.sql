@@ -71,10 +71,13 @@ SELECT
 FROM
     queue_usage;
 
-SELECT *
+SELECT
+distinct substring(REPORTING_TS, 0, 10)
+-- *
 FROM
     app
-LIMIT 10;
+WHERE REPORTING_TS LIKE "${RPT_DT}%"
+LIMIT 100;
 
 SELECT *
 FROM
