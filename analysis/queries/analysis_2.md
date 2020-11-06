@@ -1,4 +1,4 @@
-### NOT meeting potential
+### NOT Meeting Potential
 
 Queues Running under capacity with Pending Containers
 

@@ -40,6 +40,13 @@ echo "================================================================"
 # Generate Header TODO
 # Add report variables to report output.
 
+echo "Running Report Range Query"
+echo "-----------------------------------------------------------------"
+hive --hivevar DB=${DB} --hivevar RPT_DT=${RPT_DT} --silent=false --outputformat=dsv --showHeader=true -f ../queries/range.sql >${RPT_DIR}/RPT_RANGE.txt
+echo "-----------------------------------------------------------------"
+./toMD.sh ${RPT_DIR}/RPT_RANGE.txt
+
+
 # Cycle through the Analysis Reports
 for i in {1..99}; do
   if [ -f ../queries/analysis_${i}.sql ]; then
@@ -61,11 +68,13 @@ for i in {1..99}; do
   fi
 done
 
-#if [ -f ${RPT_DIR}/REPORT.md ]; then
-#  rm ${RPT_DIR}/REPORT.md
-#fi
 # Report Header
 cat ../queries/header.md > ${RPT_FILE}
+
+echo "Hive DB:                    ${DB}" >> ${RPT_FILE}
+echo "Reporting Date:             ${RPT_DT}" >> ${RPT_FILE}
+echo "Reporting Output Directory: ${RPT_DIR}" >> ${RPT_FILE}
+echo " " >> ${RPT_FILE}
 
 ## Build Report
 for i in {1..99}; do
