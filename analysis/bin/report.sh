@@ -8,8 +8,12 @@ DB=${WORKLOAD_DB:-workload-analysis}
 RPT_DT=${REPORTING_DT:-$(date +%Y-%m-%d)}
 RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/${DB}/${RPT_DT}}
 
-RPT_FILE=${RPT_DIR}/REPORT_${RPT_DT}.md
-RPT_DTL_FILE=${RPT_DIR}/REPORT_DTL_${RPT_DT}.md
+RPT_FILE=REPORT_${RPT_DT}.md
+RPT_DTL_FILE=REPORT_DTL_${RPT_DT}.md
+
+FULL_RPT_FILE=${RPT_DIR}/${RPT_FILE}
+FULL_RPT_DTL_FILE=${RPT_DIR}/${RPT_DTL_FILE}
+
 # Need this to build detail toc in main file.
 # Only works when the output md's are converted to html.
 RPT_DTL_FILE_HTML="${RPT_DTL_FILE:0:$((${#RPT_DTL_FILE}-2))}html"
@@ -76,64 +80,64 @@ for i in {1..99}; do
 done
 
 # Report Header
-cat ../queries/header.md > ${RPT_FILE}
+cat ../queries/header.md > ${FULL_RPT_FILE}
 
 # Report Range Details
-cat ../queries/range.md >> ${RPT_FILE}
-echo " " >> ${RPT_FILE}
-echo "Hive DB:                    ${DB}" >> ${RPT_FILE}
-echo "Reporting Date:             ${RPT_DT}" >> ${RPT_FILE}
-echo " " >> ${RPT_FILE}
-cat ${RPT_DIR}/RPT_RANGE.txt.md >> ${RPT_FILE}
+cat ../queries/range.md >> ${FULL_RPT_FILE}
+echo " " >> ${FULL_RPT_FILE}
+echo "Hive DB:                    ${DB}" >> ${FULL_RPT_FILE}
+echo "Reporting Date:             ${RPT_DT}" >> ${FULL_RPT_FILE}
+echo " " >> ${FULL_RPT_FILE}
+cat ${RPT_DIR}/RPT_RANGE.txt.md >> ${FULL_RPT_FILE}
 
-echo " " >> ${RPT_FILE}
-echo "## Table of Contents" >> ${RPT_FILE}
-echo " " >> ${RPT_FILE}
-echo "<!--ts-->" >> ${RPT_FILE}
-echo "<!--te-->" >> ${RPT_FILE}
-echo " " >> ${RPT_FILE}
+echo " " >> ${FULL_RPT_FILE}
+echo "## Table of Contents" >> ${FULL_RPT_FILE}
+echo " " >> ${FULL_RPT_FILE}
+echo "<!--ts-->" >> ${FULL_RPT_FILE}
+echo "<!--te-->" >> ${FULL_RPT_FILE}
+echo " " >> ${FULL_RPT_FILE}
 
 # Build the Detailed TOC
-echo "## Detailed Reports Table of Contents" >> ${RPT_FILE}
-echo " " >> ${RPT_FILE}
+echo "## Detailed Reports Table of Contents" >> ${FULL_RPT_FILE}
+echo " " >> ${FULL_RPT_FILE}
 
-#echo "* [Lost Opportunities](./${RPT_DTL_FILE_HTML}/#lost-opportunities-detailed)" >> ${RPT_FILE}
-echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#lost-opportunities-detailed\" target=\"_blank\">Lost Opportunities</a>" >> ${RPT_FILE}
-#echo "* [Cluster Used Metrics Detailed](./${RPT_DTL_FILE_HTML}/#cluster-used-metrics-detailed)" >> ${RPT_FILE}
-echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#cluster-used-metrics-detailed\" target=\"_blank\">Cluster Used Metrics Detailed</a>" >> ${RPT_FILE}
-#echo "* [Top Application Failures](./${RPT_DTL_FILE_HTML}/#top-application-failures-detailed)" >> ${RPT_FILE}
-echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#top-application-failures-detailed\" target=\"_blank\">Top Application Failures</a>" >> ${RPT_FILE}
-#echo "* [Queue User Count](./${RPT_DTL_FILE_HTML}/#queue-user-count-detailed)" >> ${RPT_FILE}
-echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#queue-user-count-detailed\" target=\"_blank\">Queue User Count</a>" >> ${RPT_FILE}
-echo " " >> ${RPT_FILE}
-echo "## Analysis Summaries" >> ${RPT_FILE}
+#echo "* [Lost Opportunities](./${RPT_DTL_FILE_HTML}/#lost-opportunities-detailed)" >> ${FULL_RPT_FILE}
+echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#lost-opportunities-detailed\" target=\"_blank\">Lost Opportunities</a>" >> ${FULL_RPT_FILE}
+#echo "* [Cluster Used Metrics Detailed](./${RPT_DTL_FILE_HTML}/#cluster-used-metrics-detailed)" >> ${FULL_RPT_FILE}
+echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#cluster-used-metrics-detailed\" target=\"_blank\">Cluster Used Metrics Detailed</a>" >> ${FULL_RPT_FILE}
+#echo "* [Top Application Failures](./${RPT_DTL_FILE_HTML}/#top-application-failures-detailed)" >> ${FULL_RPT_FILE}
+echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#top-application-failures-detailed\" target=\"_blank\">Top Application Failures</a>" >> ${FULL_RPT_FILE}
+#echo "* [Queue User Count](./${RPT_DTL_FILE_HTML}/#queue-user-count-detailed)" >> ${FULL_RPT_FILE}
+echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#queue-user-count-detailed\" target=\"_blank\">Queue User Count</a>" >> ${FULL_RPT_FILE}
+echo " " >> ${FULL_RPT_FILE}
+echo "## Analysis Summaries" >> ${FULL_RPT_FILE}
 
 ## Build Report
 for i in {1..99}; do
   if [ -f ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md ]; then
-    cat ../queries/analysis_${i}.md >> ${RPT_FILE}
-    cat ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md >> ${RPT_FILE}
-    cat ../queries/toc_ref.md >> ${RPT_FILE}
+    cat ../queries/analysis_${i}.md >> ${FULL_RPT_FILE}
+    cat ${RPT_DIR}/ANALYSIS_RPT_${i}.txt.md >> ${FULL_RPT_FILE}
+    cat ../queries/toc_ref.md >> ${FULL_RPT_FILE}
   fi
 done
 
 ## Build Report Details
-cat ../queries/detailed/detailed-header.md > ${RPT_DTL_FILE}
+cat ../queries/detailed/detailed-header.md > ${FULL_RPT_DTL_FILE}
 for i in {1..99}; do
   if [ -f ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md ]; then
-    cat ../queries/detailed/analysis_${i}.md >> ${RPT_DTL_FILE}
-    cat ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md >> ${RPT_DTL_FILE}
+    cat ../queries/detailed/analysis_${i}.md >> ${FULL_RPT_DTL_FILE}
+    cat ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md >> ${FULL_RPT_DTL_FILE}
 
-    cat ../queries/toc_ref.md >> ${RPT_DTL_FILE}
+    cat ../queries/toc_ref.md >> ${FULL_RPT_DTL_FILE}
   fi
 done
 
 ## Build Report Appendix
-cat ../report_appendix/report_appendix.md >> ${RPT_FILE}
+cat ../report_appendix/report_appendix.md >> ${FULL_RPT_FILE}
 for file in `ls ../report_appendix/appendix_*.md`; do
-  cat $file >> ${RPT_FILE}
-  cat ../queries/toc_ref.md >> ${RPT_FILE}
+  cat $file >> ${FULL_RPT_FILE}
+  cat ../queries/toc_ref.md >> ${FULL_RPT_FILE}
 done
 
 ## Build TOC for Report
-gh-md-toc --insert ${RPT_FILE}
+gh-md-toc --insert ${FULL_RPT_FILE}
