@@ -94,10 +94,16 @@ echo " " >> ${RPT_FILE}
 # Build the Detailed TOC
 echo "## Detailed Reports Table of Contents" >> ${RPT_FILE}
 echo " " >> ${RPT_FILE}
-echo "* [Lost Opportunities](./${RPT_DTL_HTML}/#lost-opportunities-detailed)" >> ${RPT_FILE}
-echo "* [Cluster Used Metrics Detailed](./${RPT_DTL_HTML}/#cluster-used-metrics-detailed)" >> ${RPT_FILE}
-echo "* [Top Application Failures](./${RPT_DTL_HTML}/#top-application-failures-detailed)" >> ${RPT_FILE}
-echo "* [Queue User Count](./${RPT_DTL_HTML}/#queue-user-count-detailed)" >> ${RPT_FILE}
+#<a href="http://example.com/" target="_blank">example</a>
+<a href="./${RPT_DTL_FILE_HTML}/#lost-opportunities-detailed" target="_blank">Lost Opportunities</a>
+#echo "* [Lost Opportunities](./${RPT_DTL_FILE_HTML}/#lost-opportunities-detailed)" >> ${RPT_FILE}
+echo "* <a href="./${RPT_DTL_FILE_HTML}/#lost-opportunities-detailed" target="_blank">Lost Opportunities</a>" >> ${RPT_FILE}
+#echo "* [Cluster Used Metrics Detailed](./${RPT_DTL_FILE_HTML}/#cluster-used-metrics-detailed)" >> ${RPT_FILE}
+echo "* <a href="./${RPT_DTL_FILE_HTML}/#cluster-used-metrics-detailed" target="_blank">Cluster Used Metrics Detailed</a>" >> ${RPT_FILE}
+#echo "* [Top Application Failures](./${RPT_DTL_FILE_HTML}/#top-application-failures-detailed)" >> ${RPT_FILE}
+echo "* <a href="./${RPT_DTL_FILE_HTML}/#top-application-failures-detailed" target="_blank">Top Application Failures</a>" >> ${RPT_FILE}
+#echo "* [Queue User Count](./${RPT_DTL_FILE_HTML}/#queue-user-count-detailed)" >> ${RPT_FILE}
+echo "* <a href="./${RPT_DTL_FILE_HTML}/#queue-user-count-detailed" target="_blank">Queue User Count</a>" >> ${RPT_FILE}
 echo " " >> ${RPT_FILE}
 echo "## Analysis Summaries" >> ${RPT_FILE}
 
@@ -116,6 +122,7 @@ for i in {1..99}; do
   if [ -f ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md ]; then
     cat ../queries/detailed/analysis_${i}.md >> ${RPT_DTL_FILE}
     cat ${RPT_DIR}/ANALYSIS_DTL_RPT_${i}.txt.md >> ${RPT_DTL_FILE}
+
     cat ../queries/toc_ref.md >> ${RPT_DTL_FILE}
   fi
 done
