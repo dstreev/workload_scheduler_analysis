@@ -65,10 +65,6 @@ ORDER BY
 -- If there room left in SLA capacity, then we should be able to flex the queue.
 
 
-
-
-
-
 SELECT *
 FROM
     APP
@@ -99,3 +95,38 @@ WHERE
       A.FINAL_STATUS = "FAILED"
   AND A.REPORTING_TS LIKE "${RPT_DT}%";
 
+SELECT *
+FROM
+    PENDING_QUEUES
+WHERE
+      REPORTING_TS LIKE "${RPT_DT}%"
+  AND QUEUE_NAME LIKE "${QUEUE}%";
+
+
+
+SELECT *
+FROM
+--     queue
+queue_usage
+WHERE
+      reporting_ts LIKE "${RPT_DT}%"
+  AND queue_name LIKE "${QUEUE}%";
+
+
+SELECT
+    from_unixtime(CAST(STARTED_TIME / 1000 AS BIGINT)),
+    from_unixtime(CAST(FINISHED_TIME / 1000 AS BIGINT)),
+    *
+FROM
+    app
+WHERE
+      REPORTING_TS LIKE "${RPT_DT}%"
+  AND QUEUE LIKE "${QUEUE}%";
+
+
+SELECT *
+FROM
+    queue_usage
+WHERE
+    reporting_ts LIKE "${RPT_DT}%"
+LIMIT 10;

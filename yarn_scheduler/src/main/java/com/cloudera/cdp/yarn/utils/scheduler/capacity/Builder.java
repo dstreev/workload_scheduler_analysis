@@ -1,15 +1,14 @@
 package com.cloudera.cdp.yarn.utils.scheduler.capacity;
 
-import com.cloudera.cdp.yarn.utils.scheduler.capacity.generator.Dot;
-
 import java.util.*;
 
 public class Builder {
 
     public static final String ROOT_QUEUE_PREFIX = "yarn.scheduler.capacity.";
 
-    public static Queue build(Properties schedulerProperties) {
-        Queue rootQueue = new Queue();
+
+    public static FlatQueue build(Properties schedulerProperties) {
+        FlatQueue rootQueue = new FlatQueue();
 
         Map<String, String> propsMap = new TreeMap<String, String>();
 
@@ -27,11 +26,11 @@ public class Builder {
         return rootQueue;
     }
 
-    protected static Queue buildOutRootQueue(Map<String, String> propsMap) {
-        Queue root = new Queue();
+    protected static FlatQueue buildOutRootQueue(Map<String, String> propsMap) {
+        FlatQueue root = new FlatQueue();
         root.setName("root");
         Set<Map.Entry<String, String>> entries = propsMap.entrySet();
-        List keyWords = Arrays.asList(Queue.PROPERTY_NAMES);
+        List keyWords = Arrays.asList(FlatQueue.PROPERTY_NAMES);
 
         List<String> foundQueues = new ArrayList<String>();
 
@@ -53,9 +52,9 @@ public class Builder {
         return root;
     }
 
-    protected static void buildChildrenQueues(Queue parent, String path, String queueName, Set<Map.Entry<String, String>> cfg, List keyWords) {
+    protected static void buildChildrenQueues(FlatQueue parent, String path, String queueName, Set<Map.Entry<String, String>> cfg, List keyWords) {
 //        System.out.println(parent.getName() + ":" + path + ":" + queueName);
-        Queue subQueue = new Queue();
+        FlatQueue subQueue = new FlatQueue();
         subQueue.setName(queueName);
         subQueue.setParent(parent);
         parent.getChildren().put(queueName, subQueue);
@@ -89,7 +88,7 @@ public class Builder {
         }
     }
 
-    protected static void setQueueProperty(Queue queue, Map.Entry<String, String> entry, String queuePath) {
+    protected static void setQueueProperty(FlatQueue queue, Map.Entry<String, String> entry, String queuePath) {
 //        System.out.println(queue.getName() + "-" + entry.getKey() + "-" +  entry.getValue());
         if (queuePath == null || !entry.getKey().startsWith(queuePath)) {
             if ("capacity".equals(entry.getKey())) {

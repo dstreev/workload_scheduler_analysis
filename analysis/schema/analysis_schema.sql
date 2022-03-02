@@ -1,3 +1,4 @@
+show databases;
 -- EXTERNAL LANDING LOCATION
 CREATE DATABASE IF NOT EXISTS ${DB}_source;
 -- MANAGED DB
@@ -128,7 +129,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS app
     APPLICATION_TYPE               STRING,
     APPLICATION_TAGS               STRING,
     PRIORITY                       STRING,
-    STARTED_TIME                   STRING,
+    STARTED_TIME                   BIGINT,
     LAUNCH_TIME                    BIGINT,
     FINISHED_TIME                  BIGINT,
     ELAPSED_TIME                   BIGINT,

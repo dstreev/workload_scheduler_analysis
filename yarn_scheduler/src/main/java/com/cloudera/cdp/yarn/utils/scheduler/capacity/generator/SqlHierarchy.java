@@ -1,6 +1,6 @@
 package com.cloudera.cdp.yarn.utils.scheduler.capacity.generator;
 
-import com.cloudera.cdp.yarn.utils.scheduler.capacity.Queue;
+import com.cloudera.cdp.yarn.utils.scheduler.capacity.FlatQueue;
 
 import java.util.Map;
 
@@ -8,20 +8,20 @@ public class SqlHierarchy {
 
     protected static final String DEFAULT_DELIMITER = "\u0001";
 
-    public static void toSqlHierarchy(Queue root) {
+    public static void toSqlHierarchy(FlatQueue root) {
 
         processQueue(root);
 
     }
 
-    public static void processQueue(Queue queue) {
+    public static void processQueue(FlatQueue queue) {
 
         String queueStruct = buildQueueStruct(queue);
         System.out.println(queueStruct);
 
     }
 
-    public static String buildQueueStruct(Queue queue) {
+    public static String buildQueueStruct(FlatQueue queue) {
         StringBuilder sb = new StringBuilder();
         sb.append(queue.getName());
         sb.append(DEFAULT_DELIMITER);
@@ -38,7 +38,7 @@ public class SqlHierarchy {
         }
         sb.append("\n");
 
-        for (Map.Entry<String, Queue> queueEntry: queue.getChildren().entrySet()) {
+        for (Map.Entry<String, FlatQueue> queueEntry: queue.getChildren().entrySet()) {
             sb.append(buildQueueStruct(queueEntry.getValue()));
         }
         return sb.toString();

@@ -1,17 +1,20 @@
 package com.cloudera.cdp.yarn.utils.scheduler.capacity;
 
 import com.cloudera.cdp.yarn.utils.scheduler.capacity.generator.Dot;
-import com.cloudera.cdp.yarn.utils.scheduler.capacity.generator.SqlHierarchy;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
 public class CapacityScheduler {
 
-    private Queue rootQueue = null;
-    private Properties schedulerProperties = null;
+    private FlatQueue rootQueue = null;
+    private Properties schedulerProperties = new Properties();
 
     protected Properties loadProperties(String fileName) {
         FileInputStream fis = null;
@@ -20,9 +23,9 @@ public class CapacityScheduler {
             fis = new FileInputStream(fileName);
             prop = new Properties();
             prop.load(fis);
-        } catch(FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         } finally {
             try {
@@ -35,7 +38,42 @@ public class CapacityScheduler {
     }
 
     protected void init(String[] args) {
-        schedulerProperties = loadProperties(args[0]);
+        // Check if extension is xml.
+        if (args[0].endsWith("xml")) {
+            try {
+                File file = new File(args[0]);
+                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+                        .newInstance();
+                DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+                Document document = documentBuilder.parse(file);
+                document.getDocumentElement().normalize();
+                System.out.println(document.getDocumentElement().getNodeName());
+
+                NodeList props = document.getElementsByTagName("property");
+
+                for (int i = 0; i < props.getLength(); i++) {
+                    Node nProp = props.item(i);
+                    if (nProp.getNodeType() == Node.ELEMENT_NODE) {
+                        Element eProp = (Element) nProp;
+                        String name = eProp.getElementsByTagName("name").item(0).getTextContent();
+                        String value = eProp.getElementsByTagName("value").item(0).getTextContent();
+                        schedulerProperties.put(name, value);
+                    }
+                }
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (SAXException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Consider it a properties file.
+            schedulerProperties = loadProperties(args[0]);
+        }
         rootQueue = Builder.build(schedulerProperties);
         Dot.toDot(rootQueue);
 //        SqlHierarchy.toSqlHierarchy(rootQueue);
