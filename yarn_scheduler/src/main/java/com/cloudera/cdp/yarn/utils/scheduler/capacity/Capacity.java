@@ -4,8 +4,17 @@ import java.math.BigDecimal;
 
 public class Capacity {
 
+    private Boolean weighted = Boolean.FALSE;
     private BigDecimal capacity = null;
     private BigDecimal maximumCapacity = null;
+
+    public Boolean getWeighted() {
+        return weighted;
+    }
+
+    public void setWeighted(Boolean weighted) {
+        this.weighted = weighted;
+    }
 
     public BigDecimal getCapacity() {
         return capacity;

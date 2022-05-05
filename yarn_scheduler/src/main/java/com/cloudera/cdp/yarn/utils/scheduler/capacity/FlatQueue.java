@@ -12,6 +12,7 @@ public class FlatQueue {
     private MathContext mathContext = new MathContext(0);
 
     public static final String ABSOLUTE_OUTPUT = "mem:{0}(GB) vcores:{1}";
+    public static final String WEIGHTED_OUTPUT = "{0}w";
     public static final String[] PROPERTY_NAMES = {
             "queues",
             "capacity",
@@ -20,6 +21,7 @@ public class FlatQueue {
             "user-limit-factor",
             "maximum-allocation-mb",
             "maximum-allocation-vcores",
+            "maximum-am-resource-percent",
             "priority",
             "state",
             "acl_submit_applications",
@@ -51,7 +53,7 @@ public class FlatQueue {
     private FlatQueue parent = null;
     private String name = null;
     private String path = null;
-    private Capacity relativeCapacity = null;
+    private Capacity capacity = null;
     private AbsoluteCapacity absoluteCapacity = null;
 //    private Float capacity = null;
 //    private Float maximumCapacity = null;
@@ -95,16 +97,21 @@ public class FlatQueue {
         setName(elements[elements.length-1]);
     }
 
-    public void setCapacity(String capacity) {
+    public void setCapacity(String capacityValue) {
         try {
-            BigDecimal cap = new BigDecimal(Double.parseDouble(capacity));
-            if (relativeCapacity == null)
-                relativeCapacity = new Capacity();
-            relativeCapacity.setCapacity(cap);
+            if (this.capacity == null)
+                this.capacity = new Capacity();
+            String lclCapacity = capacityValue;
+            if (lclCapacity.endsWith("w")) {
+                lclCapacity = lclCapacity.substring(0, lclCapacity.length()-1);
+                capacity.setWeighted(Boolean.TRUE);
+            }
+            BigDecimal cap = new BigDecimal(Double.parseDouble(lclCapacity));
+            this.capacity.setCapacity(cap);
         } catch (NumberFormatException nfe) {
             if (absoluteCapacity == null)
                 absoluteCapacity = new AbsoluteCapacity();
-            String[] caps = capacity.trim().substring(1,capacity.trim().length()-1).split(",");
+            String[] caps = capacityValue.trim().substring(1,capacityValue.trim().length()-1).split(",");
             for (String cap: caps) {
                 String[] unit = cap.split("=");
                 if (unit[0].startsWith("memory")) {
@@ -118,8 +125,12 @@ public class FlatQueue {
 
     public String getCapacity() {
         String rtn = null;
-        if (relativeCapacity != null) {
-            rtn = relativeCapacity.getCapacity().toString();
+        if (capacity != null) {
+            if (!capacity.getWeighted()) {
+                rtn = capacity.getCapacity().toString();
+            } else {
+                rtn = MessageFormat.format(WEIGHTED_OUTPUT, capacity.getCapacity().toString());
+            }
         } else if (absoluteCapacity != null) {
             rtn = MessageFormat.format(ABSOLUTE_OUTPUT, absoluteCapacity.getMemory().getCapacity().divide(thousand).round(mathContext),
                     absoluteCapacity.getVcores().getCapacity().round(mathContext));
@@ -131,8 +142,8 @@ public class FlatQueue {
 
     public String getMaximumCapacity() {
         String rtn = null;
-        if (relativeCapacity != null) {
-            rtn = relativeCapacity.getMaximumCapacity().toString();
+        if (capacity != null) {
+            rtn = capacity.getMaximumCapacity().toString();
         } else if (absoluteCapacity != null) {
             rtn = MessageFormat.format(ABSOLUTE_OUTPUT, absoluteCapacity.getMemory().getMaximumCapacity().divide(thousand).round(mathContext),
                     absoluteCapacity.getVcores().getMaximumCapacity().round(mathContext));
@@ -145,9 +156,9 @@ public class FlatQueue {
     public void setMaximumCapacity(String capacity) {
         try {
             BigDecimal cap = new BigDecimal(Double.parseDouble(capacity));
-            if (relativeCapacity == null)
-                relativeCapacity = new Capacity();
-            relativeCapacity.setMaximumCapacity(cap);
+            if (this.capacity == null)
+                this.capacity = new Capacity();
+            this.capacity.setMaximumCapacity(cap);
         } catch (NumberFormatException nfe) {
             if (absoluteCapacity == null)
                 absoluteCapacity = new AbsoluteCapacity();

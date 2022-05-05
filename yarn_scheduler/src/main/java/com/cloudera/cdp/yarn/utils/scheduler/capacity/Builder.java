@@ -101,7 +101,9 @@ public class Builder {
         for (Map.Entry<String, String> entry : cfg) {
             if (entry.getKey().startsWith(path)) {
                 String[] pathProp = keySplit(entry.getKey());
-
+//                if (pathProp == null) {
+//                    throw new RuntimeException("Failed to parse out path from: " + entry.getKey() + ". Check that property is in list");
+//                }
 //                String path = entry.getKey().substring(0,entry.getKey().lastIndexOf("."));
 //                String prop = entry.getKey().substring(entry.getKey().lastIndexOf(".")+1,entry.getKey().length());
                 if (path.equals(pathProp[0]) && keyWords.contains(pathProp[1])) {
