@@ -6,10 +6,13 @@ import java.util.Map;
 
 public class Dot {
 
+    public static final String LEGEND = "legend [label=\"legend | Capacity\\nrelative \\| absolute(mem/vcores)ffd | Max Capacity\\nrelative \\| absolute(mem/vcores)ffd | ordering policy | { minimum-user-limit-percent | user-limit-factor } } \"];\n";
+
     public static void toDot(FlatQueue root) {
         System.out.println("digraph cluster {\n" +
                 "  node [shape=record];\n" +
                 "  rankdir=LR;");
+        System.out.println(LEGEND);
 
         processQueue(root);
 
@@ -32,12 +35,16 @@ public class Dot {
         StringBuilder sb = new StringBuilder();
         sb.append(queue.getDotFriendlyName())
                 .append(" [label=\"").append(queue.getName()).append(" | ")
-                .append("{ { ").append(queue.getCapacity());
-        if (queue.getMaximumCapacity() != null) {
-            sb.append("| ").append(queue.getMaximumCapacity());
-        }
-        sb.append(" } | ")
-                .append(getCapacityChain(queue.getParent()))
+                .append("{ ")
+//                .append("{ { ")
+//                .append(queue.getCapacity());
+//        if (queue.getMaximumCapacity() != null) {
+//            sb.append("| ").append(queue.getMaximumCapacity());
+//        }
+//        sb.append(" } | ")
+//                .append(getCapacityChain(queue.getParent()))
+//                .append(getCapacityChain(queue))
+                .append(getCapacity(queue))
                 .append(" } ")
                 .append(" | ").append(queue.getOrderingPolicy())
                 .append(" | { ")
@@ -51,17 +58,27 @@ public class Dot {
     public static String getCapacityChain(FlatQueue queue) {
         StringBuilder sb = new StringBuilder();
         if (queue != null) {
-            sb.append("{ ");
+            if (queue.getParent() != null) {
+                sb.append(getCapacityChain(queue.getParent()));
+                sb.append(" | ");
+            }
+            sb.append(getCapacityChain(queue));
+        }
+        return sb.toString();
+    }
+
+    public static String getCapacity(FlatQueue queue) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("{ ");
+        if (queue.getCapacity() != null) {
             sb.append(queue.getCapacity());
             if (queue.getMaximumCapacity() != null) {
                 sb.append(" | ").append(queue.getMaximumCapacity());
             }
-            sb.append(" } ");
-            if (queue.getParent() != null) {
-                sb.append(" | ");
-                sb.append(getCapacityChain(queue.getParent()));
-            }
         }
+        sb.append(" } ");
+
         return sb.toString();
     }
 }

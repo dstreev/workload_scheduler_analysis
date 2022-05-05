@@ -1,17 +1,29 @@
 package com.cloudera.cdp.yarn.utils.scheduler.capacity;
 
 import com.cloudera.cdp.yarn.utils.scheduler.capacity.generator.Dot;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
-import java.util.InvalidPropertiesFormatException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Properties;
 
 public class CapacityScheduler {
+
+    public static final String[] PROPERTY_NAMES = {
+            "mapping-rule-format",
+            "mapping-rule-json",
+            "maximum-am-resource-percent",
+            "queue-mappings-override.enable"
+    };
 
     private FlatQueue rootQueue = null;
     private Properties schedulerProperties = new Properties();

@@ -26,25 +26,61 @@ public class Builder {
         return rootQueue;
     }
 
+    protected static String[] keySplit(String key) {
+        String[] rtn = new String[2];
+        List queueKeyWords = Arrays.asList(FlatQueue.PROPERTY_NAMES);
+
+        String[] elements = key.split("\\.");
+        String prop = elements[elements.length - 1];
+        if (queueKeyWords.contains(prop)) {
+            String[] path = new String[elements.length - 1];
+            System.arraycopy(elements, 0, path, 0, elements.length - 1);
+            rtn[0] = String.join(".", path);
+            rtn[1] = elements[elements.length - 1];
+        } else {
+            prop = elements[elements.length - 2] + "." + elements[elements.length - 1];
+            if (queueKeyWords.contains(prop)) {
+                String[] path = new String[elements.length - 2];
+                System.arraycopy(elements, 0, path, 0, elements.length - 2);
+                rtn[0] = String.join(".", path);
+                rtn[1] = elements[elements.length - 2] + "." + elements[elements.length - 1];
+            } else {
+                // Problem.  We're missing a property key definition.
+                System.err.println("Missing property definition: " + prop);
+            }
+        }
+        return rtn;
+    }
+
     protected static FlatQueue buildOutRootQueue(Map<String, String> propsMap) {
         FlatQueue root = new FlatQueue();
-        root.setName("root");
+        root.setPath("root");
         Set<Map.Entry<String, String>> entries = propsMap.entrySet();
         List keyWords = Arrays.asList(FlatQueue.PROPERTY_NAMES);
-
+        List cpKeyWords = Arrays.asList(CapacityScheduler.PROPERTY_NAMES);
         List<String> foundQueues = new ArrayList<String>();
 
         for (Map.Entry<String, String> entry : entries) {
             if (entry.getKey().startsWith("root")) {
-                String prefix = entry.getKey().substring("root.".length()).split("\\.")[0];
-                if (keyWords.contains(prefix)) {
-                    setQueueProperty(root, entry, "root");
+                String[] pathProp = keySplit(entry.getKey());
+
+//                String path = entry.getKey().substring(0,entry.getKey().lastIndexOf("."));
+//                String prop = entry.getKey().substring(entry.getKey().lastIndexOf(".")+1,entry.getKey().length());
+                if (pathProp[0].equals("root") && keyWords.contains(pathProp[1])) {
+                    setQueueProperty(root, pathProp[1], entry.getValue().toString());
                 } else {
                     // This is a subqueue.
-                    if (!foundQueues.contains(prefix)) {
-                        foundQueues.add(prefix);
-                        buildChildrenQueues(root, "root", prefix, entries, keyWords);
+                    if (!foundQueues.contains(pathProp[0]) && pathProp[0].substring(0, pathProp[0].lastIndexOf(".")).equals("root")) {
+                        foundQueues.add(pathProp[0]);
+                        buildChildrenQueues(root, pathProp[0], entries, keyWords);
                     }
+                }
+            } else {
+                // Set Global Properties
+                if (cpKeyWords.contains(entry.getKey())) {
+//                    System.err.println("CP Top level element: " + entry.getKey() + "=" + entry.getValue());
+                } else {
+                    System.err.println("Unknown CP Top level element: " + entry.getKey() + "=" + entry.getValue());
                 }
             }
         }
@@ -52,49 +88,62 @@ public class Builder {
         return root;
     }
 
-    protected static void buildChildrenQueues(FlatQueue parent, String path, String queueName, Set<Map.Entry<String, String>> cfg, List keyWords) {
+    protected static void buildChildrenQueues(FlatQueue parent, String path, Set<Map.Entry<String, String>> cfg, List keyWords) {
 //        System.out.println(parent.getName() + ":" + path + ":" + queueName);
         FlatQueue subQueue = new FlatQueue();
-        subQueue.setName(queueName);
+        subQueue.setPath(path);
+//        subQueue.setName(queueName);
         subQueue.setParent(parent);
-        parent.getChildren().put(queueName, subQueue);
-        String queuePath = path != null ? path + "." + queueName : queueName;
+//        parent.getChildren().put(path, subQueue);
+//        String queuePath = path != null ? path + "." + queueName : queueName;
         List<String> foundQueues = new ArrayList<String>();
 
         for (Map.Entry<String, String> entry : cfg) {
-            if (entry.getKey().startsWith(queuePath + ".")) {
-                String prefix = null;
-                try {
-                    prefix = entry.getKey().substring(queuePath.length() + 1).split("\\.")[0];
+            if (entry.getKey().startsWith(path)) {
+                String[] pathProp = keySplit(entry.getKey());
 
-                    if (keyWords.contains(prefix)) {
-                        setQueueProperty(subQueue, entry, queuePath);
+//                String path = entry.getKey().substring(0,entry.getKey().lastIndexOf("."));
+//                String prop = entry.getKey().substring(entry.getKey().lastIndexOf(".")+1,entry.getKey().length());
+                if (path.equals(pathProp[0]) && keyWords.contains(pathProp[1])) {
+                    setQueueProperty(subQueue, pathProp[1], entry.getValue().toString());
+                } else {
+                    // This is a subqueue.
+                    if (!foundQueues.contains(pathProp[0]) && pathProp[0].substring(0, pathProp[0].lastIndexOf(".")).equals(path)) {
+//                        if (!foundQueues.contains(pathProp[0])) {
+                        foundQueues.add(pathProp[0]);
+                        buildChildrenQueues(subQueue, pathProp[0], cfg, keyWords);
                     } else {
-                        // This is a subqueue.
-                        if (!foundQueues.contains(prefix)) {
-                            foundQueues.add(prefix);
-                            buildChildrenQueues(subQueue, queuePath, prefix, cfg, keyWords);
-                        }
-
+                        //System.err.println(String.join(":", pathProp));
                     }
-                } catch (StringIndexOutOfBoundsException siobe) {
-//                    System.err.println("QueuePath: " + queuePath + " Entry: " + entry.toString());
-                }
-            } else {
-                if (keyWords.contains(entry.getKey())) {
-                    setQueueProperty(subQueue, entry, queuePath);
                 }
             }
         }
     }
 
-    protected static void setQueueProperty(FlatQueue queue, Map.Entry<String, String> entry, String queuePath) {
+    protected static void setQueueProperty(FlatQueue queue, String property, String value) {
+//        System.out.println(queue.getName() + "-" + entry.getKey() + "-" +  entry.getValue());
+        if ("capacity".equals(property)) {
+            queue.setCapacity(value);
+        } else if ("maximum-capacity".equals(property)) {
+            queue.setMaximumCapacity(value);
+        } else if ("minimum-user-limit-percent".equals(property)) {
+            queue.setMinimumUserLimitPercent(Integer.parseInt(value));
+        } else if ("user-limit-factor".equals(property)) {
+            queue.setUserLimitFactor(Float.parseFloat(value));
+        } else if ("ordering-policy".equals(property)) {
+            queue.setOrderingPolicy(value);
+        } else if ("priority".equals(property)) {
+            queue.setPriority(Integer.parseInt(value));
+        }
+    }
+
+    protected static void setQueuePropertyOrig(FlatQueue queue, Map.Entry<String, String> entry, String queuePath) {
 //        System.out.println(queue.getName() + "-" + entry.getKey() + "-" +  entry.getValue());
         if (queuePath == null || !entry.getKey().startsWith(queuePath)) {
             if ("capacity".equals(entry.getKey())) {
-                queue.setCapacity(Float.parseFloat(entry.getValue().toString()));
+                queue.setCapacity(entry.getValue().toString());
             } else if ("maximum-capacity".equals(entry.getKey())) {
-                queue.setMaximumCapacity(Float.parseFloat(entry.getValue().toString()));
+                queue.setMaximumCapacity(entry.getValue().toString());
             } else if ("minimum-user-limit-percent".equals(entry.getKey())) {
                 queue.setMinimumUserLimitPercent(Integer.parseInt(entry.getValue().toString()));
             } else if ("user-limit-factor".equals(entry.getKey())) {
@@ -106,9 +155,9 @@ public class Builder {
             }
         } else {
             if ("capacity".equals(entry.getKey().substring(queuePath.length() + 1))) {
-                queue.setCapacity(Float.parseFloat(entry.getValue().toString()));
+                queue.setCapacity(entry.getValue().toString());
             } else if ("maximum-capacity".equals(entry.getKey().substring(queuePath.length() + 1))) {
-                queue.setMaximumCapacity(Float.parseFloat(entry.getValue().toString()));
+                queue.setMaximumCapacity(entry.getValue().toString());
             } else if ("minimum-user-limit-percent".equals(entry.getKey().substring(queuePath.length() + 1))) {
                 queue.setMinimumUserLimitPercent(Integer.parseInt(entry.getValue().toString()));
             } else if ("user-limit-factor".equals(entry.getKey().substring(queuePath.length() + 1))) {
