@@ -1,6 +1,7 @@
 package com.cloudera.cdp.yarn.utils.scheduler.capacity;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class Capacity {
 
@@ -21,7 +22,7 @@ public class Capacity {
     }
 
     public void setCapacity(BigDecimal capacity) {
-        this.capacity = capacity;
+        this.capacity = capacity.setScale(4, RoundingMode.HALF_DOWN).stripTrailingZeros();
     }
 
     public BigDecimal getMaximumCapacity() {
@@ -29,6 +30,6 @@ public class Capacity {
     }
 
     public void setMaximumCapacity(BigDecimal maximumCapacity) {
-        this.maximumCapacity = maximumCapacity;
+        this.maximumCapacity = maximumCapacity.setScale(6, RoundingMode.HALF_DOWN).stripTrailingZeros();
     }
 }

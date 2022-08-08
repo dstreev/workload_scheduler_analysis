@@ -2,6 +2,7 @@ package com.cloudera.cdp.yarn.utils.scheduler.capacity;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,6 +14,7 @@ public class FlatQueue {
 
     public static final String ABSOLUTE_OUTPUT = "mem:{0}(GB) vcores:{1}";
     public static final String WEIGHTED_OUTPUT = "{0}w";
+    public static final String RELATIVE_OUTPUT = "{0}({1})";
     public static final String[] PROPERTY_NAMES = {
             "queues",
             "capacity",
@@ -123,11 +125,18 @@ public class FlatQueue {
         }
     }
 
-    public String getCapacity() {
+    public String getCapacityDisplay() {
         String rtn = null;
         if (capacity != null) {
             if (!capacity.getWeighted()) {
-                rtn = capacity.getCapacity().toString();
+                BigDecimal ccBd = getClusterCapacity();
+                if (ccBd != null) {
+                    rtn = MessageFormat.format(RELATIVE_OUTPUT, getCapacity().toPlainString(), ccBd.setScale(6, BigDecimal.ROUND_HALF_DOWN).stripTrailingZeros().toPlainString());
+//                    rtn = capacity.getCapacity().toPlainString() +
+//                            "(" + ccBd.setScale(6, BigDecimal.ROUND_HALF_DOWN).stripTrailingZeros().toPlainString() + ")";
+                } else {
+                    rtn = capacity.getCapacity().toPlainString();
+                }
             } else {
                 rtn = MessageFormat.format(WEIGHTED_OUTPUT, capacity.getCapacity().toString());
             }
@@ -140,10 +149,47 @@ public class FlatQueue {
         return rtn;
     }
 
-    public String getMaximumCapacity() {
+    public BigDecimal getCapacity() {
+        return capacity.getCapacity();
+    }
+
+    public BigDecimal getMaximumCapacity() {
+        return capacity.getMaximumCapacity();
+    }
+
+    public BigDecimal getClusterCapacity() {
+        BigDecimal rtn = null;
+        if (capacity != null) {
+            if (this.getParent() != null && getParent().getClusterCapacity() != null && getCapacity().doubleValue() > 0) {
+                rtn = getParent().getClusterCapacity().multiply(getCapacity().divide(new BigDecimal("100"), 4, RoundingMode.HALF_DOWN)).setScale(4, RoundingMode.HALF_DOWN);
+            } else if (this.getParent() == null){
+                rtn = getCapacity();
+            }
+        }
+        return rtn;
+    }
+
+    public BigDecimal getClusterMaximumCapacity() {
+        BigDecimal rtn = null;
+        if (capacity != null) {
+            if (this.getParent() != null && getParent().getClusterMaximumCapacity() != null && getMaximumCapacity().doubleValue() > 0) {
+                rtn = getParent().getClusterMaximumCapacity().multiply(getMaximumCapacity().divide(new BigDecimal("100"), 4, RoundingMode.HALF_DOWN)).setScale(4, RoundingMode.HALF_DOWN);
+            } else if (this.getParent() == null){
+                rtn = getCapacity();
+            }
+        }
+        return rtn;
+    }
+
+    public String getMaximumCapacityDisplay() {
         String rtn = null;
         if (capacity != null) {
-            rtn = capacity.getMaximumCapacity().toString();
+            BigDecimal ccBd = getClusterMaximumCapacity();
+            if (ccBd != null) {
+                rtn = MessageFormat.format(RELATIVE_OUTPUT, getMaximumCapacity().toPlainString(), ccBd.setScale(6, BigDecimal.ROUND_HALF_DOWN).stripTrailingZeros().toPlainString());
+            } else {
+                rtn = capacity.getMaximumCapacity().toPlainString();
+            }
         } else if (absoluteCapacity != null) {
             rtn = MessageFormat.format(ABSOLUTE_OUTPUT, absoluteCapacity.getMemory().getMaximumCapacity().divide(thousand).round(mathContext),
                     absoluteCapacity.getVcores().getMaximumCapacity().round(mathContext));

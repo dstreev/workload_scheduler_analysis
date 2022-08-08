@@ -31,10 +31,10 @@ public class SqlHierarchy {
         }
         sb.append(DEFAULT_DELIMITER);
         System.out.println(queue.getName());
-        sb.append(queue.getCapacity().toString());
+        sb.append(queue.getCapacityDisplay().toString());
         sb.append(DEFAULT_DELIMITER);
-        if (queue.getMaximumCapacity() != null) {
-            sb.append(queue.getMaximumCapacity().toString());
+        if (queue.getMaximumCapacityDisplay() != null) {
+            sb.append(queue.getMaximumCapacityDisplay().toString());
         }
         sb.append("\n");
 

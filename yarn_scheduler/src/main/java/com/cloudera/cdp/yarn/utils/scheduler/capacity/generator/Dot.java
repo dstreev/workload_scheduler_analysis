@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Dot {
 
-    public static final String LEGEND = "legend [label=\"legend | Capacity\\nrelative \\| absolute(mem/vcores)ffd | Max Capacity\\nrelative \\| absolute(mem/vcores)ffd \\| weight(w) | ordering policy | { minimum-user-limit-percent | user-limit-factor } } \"];\n";
+    public static final String LEGEND = "legend [label=\"legend | Capacity\\nrelative(cluster) \\| absolute(mem/vcores)ffd | Max Capacity\\nrelative(cluster) \\| absolute(mem/vcores)ffd \\| weight(w) | ordering policy | { minimum-user-limit-percent | user-limit-factor } } \"];\n";
 
     public static void toDot(FlatQueue root) {
         System.out.println("digraph cluster {\n" +
@@ -71,10 +71,10 @@ public class Dot {
         StringBuilder sb = new StringBuilder();
 
         sb.append("{ ");
-        if (queue.getCapacity() != null) {
-            sb.append(queue.getCapacity());
-            if (queue.getMaximumCapacity() != null) {
-                sb.append(" | ").append(queue.getMaximumCapacity());
+        if (queue.getCapacityDisplay() != null) {
+            sb.append(queue.getCapacityDisplay());
+            if (queue.getMaximumCapacityDisplay() != null) {
+                sb.append(" | ").append(queue.getMaximumCapacityDisplay());
             }
         }
         sb.append(" } ");

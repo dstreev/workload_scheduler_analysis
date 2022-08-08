@@ -164,14 +164,14 @@ CREATE TABLE app LIKE ${DB}_source.app
 STORED AS ORC;
 -- Change the Location to the Managed Warehouse
 -- Bug Filed for this: https://jira.cloudera.com/browse/CDPD-18875
-ALTER TABLE app SET LOCATION "/warehouse/tablespace/managed/hive/${DB}.db/app";
+-- ALTER TABLE app SET LOCATION "/warehouse/tablespace/managed/hive/${DB}.db/app";
 
 DROP TABLE IF EXISTS queue;
 CREATE TABLE queue LIKE ${DB}_source.queue
 STORED AS ORC;
 -- Change the Location to the Managed Warehouse
 -- Bug Filed for this: https://jira.cloudera.com/browse/CDPD-18875
-ALTER TABLE queue SET LOCATION "/warehouse/tablespace/managed/hive/${DB}.db/queue";
+-- ALTER TABLE queue SET LOCATION "/warehouse/tablespace/managed/hive/${DB}.db/queue";
 
 
 DROP TABLE IF EXISTS queue_usage;
@@ -179,5 +179,5 @@ CREATE TABLE queue_usage LIKE ${DB}_source.queue_usage
 STORED AS ORC;
 -- Change the Location to the Managed Warehouse
 -- Bug Filed for this: https://jira.cloudera.com/browse/CDPD-18875
-ALTER TABLE queue_usage SET LOCATION "/warehouse/tablespace/managed/hive/${DB}.db/queue_usage";
+-- ALTER TABLE queue_usage SET LOCATION "/warehouse/tablespace/managed/hive/${DB}.db/queue_usage";
 

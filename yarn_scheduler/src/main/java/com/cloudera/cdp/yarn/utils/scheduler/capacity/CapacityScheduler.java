@@ -22,7 +22,14 @@ public class CapacityScheduler {
             "mapping-rule-format",
             "mapping-rule-json",
             "maximum-am-resource-percent",
-            "queue-mappings-override.enable"
+            "queue-mappings",
+            "queue-mappings-override.enable",
+            "node-locality-delay",
+            "per-node-heartbeat.maximum-container-assignments",
+            "per-node-heartbeat.maximum-offswitch-assignments",
+            "per-node-heartbeat.multiple-assignments-enabled",
+            "rack-locality-additional-delay",
+            "schedule-asynchronously.enable"
     };
 
     private FlatQueue rootQueue = null;

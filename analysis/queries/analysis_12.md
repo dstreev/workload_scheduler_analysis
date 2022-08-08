@@ -9,3 +9,4 @@ This does NOT consider the query pattern, like ETL/ELT.  Which, regardless of du
 These reports **require** [Hive and Yarn Application Tag integration](#hive-job-queue-mapping-without-impersonation) and will *NOT* work on clusters less than HDP 3.1.5.
 
 An empty dataset may also be to result of a lack of collection Application Start/End times.
+
