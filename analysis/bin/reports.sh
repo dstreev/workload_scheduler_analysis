@@ -10,7 +10,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     *)
-      nohup ./report.sh ${WORKLOAD_DB} ${1} &
+      nohup ./report.sh -DB ${WORKLOAD_DB} -RPT_DT ${1} &
       shift
       ;;
   esac
