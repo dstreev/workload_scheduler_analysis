@@ -16,7 +16,7 @@ FULL_RPT_DTL_FILE=${RPT_DIR}/${RPT_DTL_FILE}
 
 # Need this to build detail toc in main file.
 # Only works when the output md's are converted to html.
-RPT_DTL_FILE_HTML="${RPT_DTL_FILE:0:$((${#RPT_DTL_FILE}-2))}html"
+RPT_DTL_FILE_HTML="${RPT_DTL_FILE:0:$((${#RPT_DTL_FILE}-2))}md"
 #echo "*******************************************"
 #echo "$RPT_DTL_FILE_HTML"
 #echo "*******************************************"
@@ -93,8 +93,8 @@ cat ${RPT_DIR}/RPT_RANGE.txt.md >> ${FULL_RPT_FILE}
 echo " " >> ${FULL_RPT_FILE}
 echo "## Table of Contents" >> ${FULL_RPT_FILE}
 echo " " >> ${FULL_RPT_FILE}
-echo "<!--ts-->" >> ${FULL_RPT_FILE}
-echo "<!--te-->" >> ${FULL_RPT_FILE}
+echo "<!--TOC-->" >> ${FULL_RPT_FILE}
+#echo "<!--te-->" >> ${FULL_RPT_FILE}
 echo " " >> ${FULL_RPT_FILE}
 
 # Build the Detailed TOC
@@ -102,13 +102,13 @@ echo "## Detailed Reports Table of Contents" >> ${FULL_RPT_FILE}
 echo " " >> ${FULL_RPT_FILE}
 
 #echo "* [Lost Opportunities](./${RPT_DTL_FILE_HTML}/#lost-opportunities-detailed)" >> ${FULL_RPT_FILE}
-echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#lost-opportunities-detailed\" target=\"_blank\">Lost Opportunities</a>" >> ${FULL_RPT_FILE}
+echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#lostopportunitiesdetailed\" target=\"_blank\">Lost Opportunities</a>" >> ${FULL_RPT_FILE}
 #echo "* [Cluster Used Metrics Detailed](./${RPT_DTL_FILE_HTML}/#cluster-used-metrics-detailed)" >> ${FULL_RPT_FILE}
-echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#cluster-used-metrics-detailed\" target=\"_blank\">Cluster Used Metrics Detailed</a>" >> ${FULL_RPT_FILE}
+echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#clusterusedmetricsdetailed\" target=\"_blank\">Cluster Used Metrics Detailed</a>" >> ${FULL_RPT_FILE}
 #echo "* [Top Application Failures](./${RPT_DTL_FILE_HTML}/#top-application-failures-detailed)" >> ${FULL_RPT_FILE}
-echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#top-application-failures-detailed\" target=\"_blank\">Top Application Failures</a>" >> ${FULL_RPT_FILE}
+echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#topapplicationfailuresdetailed\" target=\"_blank\">Top Application Failures</a>" >> ${FULL_RPT_FILE}
 #echo "* [Queue User Count](./${RPT_DTL_FILE_HTML}/#queue-user-count-detailed)" >> ${FULL_RPT_FILE}
-echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#queue-user-count-detailed\" target=\"_blank\">Queue User Count</a>" >> ${FULL_RPT_FILE}
+echo "* <a href=\"./${RPT_DTL_FILE_HTML}/#queueusercountdetailed\" target=\"_blank\">Queue User Count</a>" >> ${FULL_RPT_FILE}
 echo " " >> ${FULL_RPT_FILE}
 echo "## Analysis Summaries" >> ${FULL_RPT_FILE}
 

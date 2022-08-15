@@ -1,6 +1,6 @@
 ### Application DELAYS greater than 10 secs.
 
-This report shows the average delays for application that took more than 10 secs to launch.
+This report shows the average delay for applications that took more than 10 secs to launch.
 
 It groups the details by 'day', 'application type', and 'queue'.
 

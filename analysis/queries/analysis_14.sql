@@ -6,10 +6,10 @@ use ${DB};
 -------------------------------------------------------------------------
 SELECT
     to_date(reporting_ts)           AS RPT_DT
-  , application_type                AS TYPE
+  , application_type                AS APP_TYPE
   , queue
-  , COUNT(1)                        AS CNT
-  , ROUND(AVG(launch_time - started_time)) AS DELAY_IN_MS
+  , COUNT(1)                        AS APP_COUNT
+  , ROUND(AVG(launch_time - started_time)) AS AVG_DELAY_MS
 FROM
     app a
 WHERE
