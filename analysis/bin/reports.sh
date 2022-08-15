@@ -4,7 +4,8 @@ cd $(dirname $0)
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -DB*)
+    -DB)
+      shift
       WORKLOAD_DB=${1}
       shift
       ;;
