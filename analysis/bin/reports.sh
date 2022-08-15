@@ -13,5 +13,4 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
   esac
-
 done
