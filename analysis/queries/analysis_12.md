@@ -6,7 +6,7 @@ Results are limited to queries that run in **UNDER** 3 mins, which might make th
 
 This does NOT consider the query pattern, like ETL/ELT.  Which, regardless of duration, don't benefit much from LLAP.
 
-These reports **require** [Hive and Yarn Application Tag integration](#hive-job-queue-mapping-without-impersonation) and will *NOT* work on clusters less than HDP 3.1.5.
+These reports **require** [Hive and Yarn Application Tag integration](#hivejobqueuemappingwithoutimpersonation) and will *NOT* work on clusters less than HDP 3.1.5.
 
 An empty dataset may also be to result of a lack of collection Application Start/End times.
 
