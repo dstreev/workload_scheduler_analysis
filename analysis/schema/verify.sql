@@ -8,11 +8,14 @@ SHOW CREATE TABLE QUEUE_USAGE;
 -- SELECT * FROM HIERARCHY;
 
 SELECT DISTINCT
-    reporting_ts
+    to_date(reporting_ts) AS RPT_DT,
+                COUNT(1)
 FROM
     app
+GROUP BY
+    to_date(reporting_ts)
 ORDER BY
-    reporting_ts;
+    RPT_DT;
 
 -- Validate the number of minutes captured for a day.
 SELECT
@@ -53,11 +56,11 @@ FROM
     queue_usage;
 
 -- Cleanup junk.
-DELETE
-FROM
-    queue_usage
-WHERE
-    reporting_ts NOT LIKE "2020%";
+-- DELETE
+-- FROM
+--     queue_usage
+-- WHERE
+--     reporting_ts NOT LIKE "2020%";
 
 SELECT *
 FROM
