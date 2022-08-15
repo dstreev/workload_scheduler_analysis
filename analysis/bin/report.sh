@@ -2,7 +2,20 @@
 
 cd $(dirname $0)
 
-REPORTING_DT=$1
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -DB|--DATABASE)
+      shift
+      WORKLOAD_DB=${1}
+      shift
+      ;;
+    -RPT_DT|--REPORT_DATE)
+      shift
+      REPORTING_DT=${1}
+      shift
+      ;;
+  esac
+done
 
 DB=${WORKLOAD_DB:-workload-analysis}
 RPT_DT=${REPORTING_DT:-$(date +%Y-%m-%d)}
