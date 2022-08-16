@@ -11,7 +11,6 @@ The Workload Analysis process collects data points from YARN containers and sche
 Run from an Edge Node. Set the following environment variables for your implementation:
 ```
 export WORKLOAD_DB=<hive db to create/use>
-export REPORTING_DT=<target date for report 'yyyy-MM-dd'>
 export REPORTING_DIR=<local output directoy for reports>
 ```
 
@@ -19,13 +18,12 @@ If these aren't set, defaults will be used:
 
 ```
 DB=${WORKLOAD_DB:-workload-analysis}
-RPT_DT=${REPORTING_DT:-`date +%Y-%m-%d`}
 RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/${DB}/`date +%Y-%m-%d`}
 ```
 
 - The Hive [Setup Scripts](bin/setup.sh) used to build the databases and views.
 - The Hive [Load Scripts](bin/load.sh) used to transform the source 'external' tables to the 'managed' tables.
-- Cycle through each of the [Analysis Reports](bin/report.sh) and save output to the local filesystem.  These scripts can be run from your favorite JDBC client, like `hive/beeline` or `dbvisualizer`.
+- Cycle through each of the [Analysis Reports-Multi-Day](bin/reports.sh) or [Analysis Report-Single-Day](bin/report.shj) and save output to the local filesystem.  These scripts can be run from your favorite JDBC client, like `hive/beeline` or `dbvisualizer`.
 
 ### Collector
 

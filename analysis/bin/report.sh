@@ -17,6 +17,12 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ "${WORKLOAD_DB}x" == "x" ]]; then
+  echo "DB not set"
+  echo "Usage: report.sh -DB <db> -RPT_DT <report_date yyyy-MM-dd"
+  exit -1
+fi
+
 DB=${WORKLOAD_DB:-workload-analysis}
 RPT_DT=${REPORTING_DT:-$(date +%Y-%m-%d)}
 RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/${DB}/${RPT_DT}}
