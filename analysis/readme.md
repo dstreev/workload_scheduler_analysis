@@ -23,7 +23,7 @@ RPT_DIR=${REPORTING_DIR:-${HOME}/workload-analysis/${DB}/`date +%Y-%m-%d`}
 
 - The Hive [Setup Scripts](bin/setup.sh) used to build the databases and views.
 - The Hive [Load Scripts](bin/load.sh) used to transform the source 'external' tables to the 'managed' tables.
-- Cycle through each of the [Analysis Reports-Multi-Day](bin/reports.sh) or [Analysis Report-Single-Day](bin/report.shj) and save output to the local filesystem.  These scripts can be run from your favorite JDBC client, like `hive/beeline` or `dbvisualizer`.
+- Cycle through each of the [Analysis Reports-Multi-Day](bin/reports.sh) or [Analysis Report-Single-Day](bin/report.sh) and save output to the local filesystem.  These scripts can be run from your favorite JDBC client, like `hive/beeline` or `dbvisualizer`.
 
 ### Collector
 
