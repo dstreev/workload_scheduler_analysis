@@ -7,6 +7,7 @@ USE ${DB};
 SELECT
     TO_DATE(REPORTING_TS)                                AS RPT_DT
   , A.QUEUE                                              AS QUEUE
+  , A.APPLICATION_TYPE                                   AS APP_TYPE
   , A.NAME                                               AS JOB_NAME
   , ROUND(AVG((A.FINISHED_TIME - A.LAUNCH_TIME) / 1000)) AS AVG_JOB_LENGTH_SECS
   , ROUND(AVG((A.LAUNCH_TIME - A.STARTED_TIME) / 1000))  AS AVG_DELAY_SECS
@@ -18,9 +19,10 @@ FROM
 WHERE
     REPORTING_TS LIKE "${RPT_DT}%"
 GROUP BY
-    TO_DATE(REPORTING_TS), A.NAME
-                         , A.NAME
-                         , A.QUEUE
+    TO_DATE(REPORTING_TS)
+  , A.QUEUE
+  , A.APPLICATION_TYPE
+  , A.NAME
 HAVING
     JOB_COUNT > 20
 ORDER BY
