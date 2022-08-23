@@ -2,6 +2,10 @@
 
 cd $(dirname $0)
 
+if test "$#" -lt 3; then
+    echo "Missing arguments.  Usage: reports.sh -DB <db> <report_date_yyyy-MM-dd> [<report_date_yyyy-MM-dd>]..."
+fi
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -DB)
