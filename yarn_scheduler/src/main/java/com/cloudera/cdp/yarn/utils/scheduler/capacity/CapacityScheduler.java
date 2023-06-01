@@ -32,8 +32,9 @@ public class CapacityScheduler {
             "schedule-asynchronously.enable"
     };
 
-    private FlatQueue rootQueue = null;
-    private Properties schedulerProperties = new Properties();
+    private State capState = new State();
+//    private FlatQueue rootQueue = null;
+//    private Properties schedulerProperties = new Properties();
 
     protected Properties loadProperties(String fileName) {
         FileInputStream fis = null;
@@ -58,6 +59,7 @@ public class CapacityScheduler {
 
     protected void init(String[] args) {
         // Check if extension is xml.
+        Properties schedulerProperties = new Properties();
         if (args[0].endsWith("xml")) {
             try {
                 File file = new File(args[0]);
@@ -66,7 +68,7 @@ public class CapacityScheduler {
                 DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
                 Document document = documentBuilder.parse(file);
                 document.getDocumentElement().normalize();
-                System.out.println(document.getDocumentElement().getNodeName());
+//                System.out.println(document.getDocumentElement().getNodeName());
 
                 NodeList props = document.getElementsByTagName("property");
 
@@ -93,15 +95,15 @@ public class CapacityScheduler {
             // Consider it a properties file.
             schedulerProperties = loadProperties(args[0]);
         }
-        rootQueue = Builder.build(schedulerProperties);
-        Dot.toDot(rootQueue);
+        Builder.build(capState, schedulerProperties);
+        Dot dot = new Dot(capState);
+        System.out.println(dot.build());
 //        SqlHierarchy.toSqlHierarchy(rootQueue);
     }
 
     public static void main(String[] args) {
         CapacityScheduler capSch = new CapacityScheduler();
         capSch.init(args);
-
     }
 
 }

@@ -1,57 +1,59 @@
 package com.cloudera.cdp.yarn.utils.scheduler.capacity.generator;
 
 import com.cloudera.cdp.yarn.utils.scheduler.capacity.FlatQueue;
+import com.cloudera.cdp.yarn.utils.scheduler.capacity.State;
 
 import java.util.Map;
 
 public class Dot {
 
-    public static final String LEGEND = "legend [label=\"legend | Capacity\\nrelative(cluster) \\| absolute(mem/vcores)ffd | Max Capacity\\nrelative(cluster) \\| absolute(mem/vcores)ffd \\| weight(w) | ordering policy | { minimum-user-limit-percent | user-limit-factor } } \"];\n";
+    public static final String LEGEND = "legend [label=\"legend | Capacity\\nrelative(cluster) \\| absolute(mem/vcores)ffd | Max Capacity\\nrelative(cluster) \\| absolute(mem/vcores)ffd \\| weight(w) | ordering policy | { minimum-user-limit-percent | user-limit-factor } | { preemption | intra-queue-preemption } \"];\n";
+    private State state;
 
-    public static void toDot(FlatQueue root) {
-        System.out.println("digraph cluster {\n" +
+    public Dot(State state) {
+        this.state = state;
+    }
+
+    public String build() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph cluster {\n" +
                 "  node [shape=record];\n" +
                 "  rankdir=LR;");
-        System.out.println(LEGEND);
-
-        processQueue(root);
-
-        System.out.println("}");
+        sb.append(LEGEND);
+        sb.append(processQueue(state.getFlatQueue()));
+        sb.append("}").append("\n");
+        return sb.toString();
     }
-
-    public static void processQueue(FlatQueue queue) {
-
-        String queueStruct = buildQueueStruct(queue);
-        System.out.println(queueStruct);
+    public String processQueue(FlatQueue queue) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(buildQueueStruct(queue));
 
         for (Map.Entry<String, FlatQueue> child : queue.getChildren().entrySet()) {
-            processQueue(child.getValue());
-            System.out.println(queue.getDotFriendlyName() + " -> " + child.getValue().getDotFriendlyName() + ";");
+            sb.append(processQueue(child.getValue()));
+            sb.append(queue.getDotFriendlyName() + " -> " + child.getValue().getDotFriendlyName() + ";\n");
         }
-
+        return sb.toString();
     }
 
-    public static String buildQueueStruct(FlatQueue queue) {
+    public String buildQueueStruct(FlatQueue queue) {
         StringBuilder sb = new StringBuilder();
         sb.append(queue.getDotFriendlyName())
                 .append(" [label=\"").append(queue.getName()).append(" | ")
                 .append("{ ")
-//                .append("{ { ")
-//                .append(queue.getCapacity());
-//        if (queue.getMaximumCapacity() != null) {
-//            sb.append("| ").append(queue.getMaximumCapacity());
-//        }
-//        sb.append(" } | ")
-//                .append(getCapacityChain(queue.getParent()))
-//                .append(getCapacityChain(queue))
                 .append(getCapacity(queue))
                 .append(" } ")
                 .append(" | ").append(queue.getOrderingPolicy())
                 .append(" | { ")
                 .append(queue.getMinimumUserLimitPercent()).append(" | ").append(queue.getUserLimitFactor())
                 .append(" } ")
+                // Preemption details
+                .append(" | { ")
+                .append(state.getYarnResourceManager().getPreemptionEnabled() ? queue.getDisablePreemption() ? "disabled" :"enabled" : "disabled")
+                .append(" | ")
+                .append(state.getYarnResourceManager().getIntraQueuePreemptionEnabled() ? queue.getIntraQueuePreemptionDisabled() ? "disabled" :"enabled" : "disabled")
                 .append(" } ")
-                .append("\"];");
+                .append(" } ")
+                .append("\"];").append("\n");
         return sb.toString();
     }
 

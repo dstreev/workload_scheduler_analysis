@@ -53,11 +53,11 @@ ORDER BY
 -- FROM
 --     UNDER_CAP_WITH_PENDING;
 
--- Look at the users in the above results.  We're looking for 'non-impersonation'
+-- Look at the users in the above analysis.  We're looking for 'non-impersonation'
 -- and user usage patterns.  Especially when in the same queue.
 
 
--- If there is 'remaining' cluster capacity in the above results.
+-- If there is 'remaining' cluster capacity in the above analysis.
 -- then...
 -- At that point in time, review the 'used' capacity of other queues.
 -- Use this point in time to determine if the SLA requirements of other queues

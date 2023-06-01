@@ -1,6 +1,6 @@
 USE ${DB};
 
--- We're collecting the App data every hour.  So the results should be specific for that hour
+-- We're collecting the App data every hour.  So the analysis should be specific for that hour
 -- interval, since we aren't getting the applications start,launch,or end times.
 
 

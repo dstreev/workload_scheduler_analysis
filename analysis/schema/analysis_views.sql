@@ -9,7 +9,7 @@ USE ${DB};
 -- Then pulls in all the other queues in that time zone, along with
 -- the usage 'users'.
 -- Each of the timeframes will have a complete listing of all queue's in that
--- timeframe so we can compare the results of each to determine the capacity for
+-- timeframe so we can compare the analysis of each to determine the capacity for
 -- the backed up queue's can be increased.
 -- With the list of users, we can also see if 'non-impersonation' is at play, which
 -- might mean a change in 'ordering-policy'

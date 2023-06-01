@@ -28,6 +28,12 @@ public class FlatQueue {
             "state",
             "acl_submit_applications",
             "acl_administer_queue",
+            //
+            "acl_application_max_priority",
+            "default-application-lifetime",
+            "maximum-application-lifetime",
+            "default-application-priority",
+            //
             "ordering-policy",
             "accessible-node-labels",
             "disable_preemption",
@@ -50,7 +56,9 @@ public class FlatQueue {
             "auto-queue-creation-v2.enabled",
             "leaf-queue-template.capacity",
             "acl_administer_jobs",
-            "maximum-applications"};
+            "maximum-applications",
+            "maximum-am-resource-limit",
+            "max-parallel-apps"};
 
     private FlatQueue parent = null;
     private String name = null;
@@ -63,6 +71,9 @@ public class FlatQueue {
     private Float userLimitFactor = 1.0f;
     private String orderingPolicy = "fifo";
     private Integer priority;
+    private Boolean disablePreemption = Boolean.FALSE;
+    private Boolean intraQueuePreemptionDisabled = Boolean.FALSE;
+
 //    private Integer maximumAllocationMb;
 //    private Integer maximumAllocationVCores;
 
@@ -147,6 +158,22 @@ public class FlatQueue {
 //                    " vc:"+absoluteCapacity.getVcores().getCapacity().toPlainString();
         }
         return rtn;
+    }
+
+    public Boolean getDisablePreemption() {
+        return disablePreemption;
+    }
+
+    public void setDisablePreemption(Boolean disablePreemption) {
+        this.disablePreemption = disablePreemption;
+    }
+
+    public void setIntraQueuePreemptionDisabled(Boolean intraQueuePreemptionDisabled) {
+        this.intraQueuePreemptionDisabled = intraQueuePreemptionDisabled;
+    }
+
+    public Boolean getIntraQueuePreemptionDisabled() {
+        return intraQueuePreemptionDisabled;
     }
 
     public BigDecimal getCapacity() {

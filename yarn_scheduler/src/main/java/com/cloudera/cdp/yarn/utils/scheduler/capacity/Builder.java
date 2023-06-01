@@ -5,39 +5,40 @@ import java.util.*;
 public class Builder {
 
     public static final String ROOT_QUEUE_PREFIX = "yarn.scheduler.capacity.";
+//    public static final String YARN_RESOURCE_MANAGER_PREFIX = "yarn.resourcemanager.";
 
+    public static void build(State capState, Properties schedulerProperties) {
 
-    public static FlatQueue build(Properties schedulerProperties) {
-        FlatQueue rootQueue = new FlatQueue();
-
-        Map<String, String> propsMap = new TreeMap<String, String>();
+        Map<String, String> csPropsMap = new TreeMap<String, String>();
+        Map<String, String> rmPropsMap = new TreeMap<String, String>();
 
         Enumeration<String> enumPropNames = (Enumeration<String>) schedulerProperties.propertyNames();
 
         while (enumPropNames.hasMoreElements()) {
             String nextKey = enumPropNames.nextElement();
             if (nextKey.startsWith(ROOT_QUEUE_PREFIX)) {
-                propsMap.put(nextKey.substring(ROOT_QUEUE_PREFIX.length()), schedulerProperties.getProperty(nextKey));
+                csPropsMap.put(nextKey.substring(ROOT_QUEUE_PREFIX.length()), schedulerProperties.getProperty(nextKey));
+            }
+            if (nextKey.startsWith(YarnResourceManager.PROPERTY_PREFIX)) {
+                rmPropsMap.put(nextKey.substring(YarnResourceManager.PROPERTY_PREFIX.length()), schedulerProperties.getProperty(nextKey));
             }
         }
 
-        rootQueue = buildOutRootQueue(propsMap);
+        capState.setFlatQueue(buildOutRootQueue(csPropsMap));
 
-        return rootQueue;
+        capState.setYarnResourceManager(buildOutYRM(rmPropsMap));
+//        return rootQueue;
     }
+
 
     protected static String[] keySplit(String key) {
         String[] rtn = new String[2];
         List queueKeyWords = Arrays.asList(FlatQueue.PROPERTY_NAMES);
 
         String[] elements = key.split("\\.");
-        String prop = elements[elements.length - 1];
+
+        String prop = elements[elements.length - 2] + "." + elements[elements.length - 1];
         if (queueKeyWords.contains(prop)) {
-            String[] path = new String[elements.length - 1];
-            System.arraycopy(elements, 0, path, 0, elements.length - 1);
-            rtn[0] = String.join(".", path);
-            rtn[1] = elements[elements.length - 1];
-        } else {
             prop = elements[elements.length - 2] + "." + elements[elements.length - 1];
             if (queueKeyWords.contains(prop)) {
                 String[] path = new String[elements.length - 2];
@@ -48,8 +49,54 @@ public class Builder {
                 // Problem.  We're missing a property key definition.
                 System.err.println("Missing property definition: " + prop);
             }
+        } else {
+            prop = elements[elements.length - 1];
+            String[] path = new String[elements.length - 1];
+            System.arraycopy(elements, 0, path, 0, elements.length - 1);
+            rtn[0] = String.join(".", path);
+            rtn[1] = elements[elements.length - 1];
         }
+
+//        String prop = elements[elements.length - 1];
+//        if (queueKeyWords.contains(prop)) {
+//            String[] path = new String[elements.length - 1];
+//            System.arraycopy(elements, 0, path, 0, elements.length - 1);
+//            rtn[0] = String.join(".", path);
+//            rtn[1] = elements[elements.length - 1];
+//        } else {
+//            prop = elements[elements.length - 2] + "." + elements[elements.length - 1];
+//            if (queueKeyWords.contains(prop)) {
+//                String[] path = new String[elements.length - 2];
+//                System.arraycopy(elements, 0, path, 0, elements.length - 2);
+//                rtn[0] = String.join(".", path);
+//                rtn[1] = elements[elements.length - 2] + "." + elements[elements.length - 1];
+//            } else {
+//                // Problem.  We're missing a property key definition.
+//                System.err.println("Missing property definition: " + prop);
+//            }
+//        }
         return rtn;
+    }
+
+    protected static YarnResourceManager buildOutYRM(Map<String, String> propsMap) {
+        YarnResourceManager yarnResourceManager = new YarnResourceManager();
+        Set<Map.Entry<String, String>> entries = propsMap.entrySet();
+
+        for (Map.Entry<String, String> entry : entries) {
+            if (entry.getKey().equals(YarnResourceManager.PROPERTY_ENABLED)) {
+                yarnResourceManager.setPreemptionEnabled(Boolean.valueOf(entry.getValue()));
+            }
+            if (entry.getKey().equals(YarnResourceManager.PROPERTY_POLICIES)) {
+                yarnResourceManager.setPolicies(entry.getValue());
+            }
+            if (entry.getKey().equals(YarnResourceManager.PROPERTY_INTRA_QUEUE_PREEMPTION_ENABLED)) {
+                yarnResourceManager.setIntraQueuePreemptionEnabled(Boolean.valueOf(entry.getValue()));
+            }
+            if (entry.getKey().equals(YarnResourceManager.PROPERTY_MAX_IGNORED_OVER_CAPACITY)) {
+                yarnResourceManager.setMaxIgnoredOverCapacity(Float.valueOf(entry.getValue()));
+            }
+        }
+        return yarnResourceManager;
     }
 
     protected static FlatQueue buildOutRootQueue(Map<String, String> propsMap) {
@@ -69,6 +116,9 @@ public class Builder {
                 if (pathProp[0].equals("root") && keyWords.contains(pathProp[1])) {
                     setQueueProperty(root, pathProp[1], entry.getValue().toString());
                 } else {
+//                    if (pathProp[0].startsWith("root") && !keyWords.contains(pathProp[1])) {
+//                        System.err.println("Unknown root element: " + pathProp[1]);
+//                    }
                     // This is a subqueue.
                     if (!foundQueues.contains(pathProp[0]) && pathProp[0].substring(0, pathProp[0].lastIndexOf(".")).equals("root")) {
                         foundQueues.add(pathProp[0]);
@@ -136,6 +186,10 @@ public class Builder {
             queue.setOrderingPolicy(value);
         } else if ("priority".equals(property)) {
             queue.setPriority(Integer.parseInt(value));
+        } else if ("disable_preemption".equals(property)) {
+            queue.setDisablePreemption(Boolean.valueOf(value));
+        } else if ("intra-queue-preemption.disable_preemption".equals(property)) {
+            queue.setIntraQueuePreemptionDisabled(Boolean.valueOf(value));
         }
     }
 
